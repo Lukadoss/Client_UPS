@@ -18,7 +18,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<GridPane fx:id="gamePane" alignment="center" hgap="10" vgap="10" xmlns="http://javafx.com/javafx/8.0.112-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Pexeso.Controller.GameController">
+<GridPane fx:id="gamePane" alignment="center" hgap="10" vgap="10" xmlns="http://javafx.com/javafx/8.0.112-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Trick.Controller.GameController">
     <children>
         <Pane prefHeight="768.0" prefWidth="1024.0">
             <children>
@@ -95,6 +95,6 @@
         <RowConstraints />
     </rowConstraints>
     <stylesheets>
-        <URL value="@/Pexeso/Public/Styles/material.css" />
+        <URL value="@/Trick/Public/Styles/material.css" />
     </stylesheets>
 </GridPane>

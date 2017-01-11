@@ -1,4 +1,4 @@
-package Pexeso.TCPClient;
+package Trick.TCPClient;
 
 /**
  * Created by seda on 03/11/16.

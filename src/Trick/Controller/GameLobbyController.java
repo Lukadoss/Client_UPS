@@ -1,8 +1,8 @@
-package Pexeso.Controller;
+package Trick.Controller;
 
-import Pexeso.Main;
-import Pexeso.TCPClient.MsgTables;
-import Pexeso.TCPClient.TCP;
+import Trick.Main;
+import Trick.TCPClient.MsgTables;
+import Trick.TCPClient.TCP;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -16,7 +16,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.effect.BlendMode;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
@@ -51,31 +50,13 @@ public class GameLobbyController implements Initializable {
     @FXML
     public Button readyBtn;
 
-    //Chatting UI
-    @FXML
-    private TextArea chatWindow;
-    @FXML
-    private TextField chatMsg;
-    @FXML
-    private Button sendChatMsg;
-
     //Joined Users UI
     @FXML
     private VBox vboxU0, vboxU1, vboxU2, vboxU3;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        chatWindow.setEditable(false);
         this.tcpConn = Main.tcpi;
-
-        chatMsg.setOnKeyPressed(new EventHandler<KeyEvent>() {
-            @Override
-            public void handle(KeyEvent ke) {
-                if (ke.getCode().equals(KeyCode.ENTER)) {
-                    sendNewMsg();
-                }
-            }
-        });
     }
 
     @FXML
@@ -83,7 +64,7 @@ public class GameLobbyController implements Initializable {
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
-                final Image cardBackImg = new Image("/Pexeso/Public/Img/user-icon.png");
+                final Image cardBackImg = new Image("/Trick/Public/Img/user-icon.png");
                 ImageView userIcon = new ImageView();
                 userIcon.setImage(cardBackImg);
                 Text userName = new Text();
@@ -240,12 +221,12 @@ public class GameLobbyController implements Initializable {
                     Stage gameLobbyStage = (Stage) gameLobbyPane.getScene().getWindow();
                     gameLobbyStage.close();
 
-                    FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/Pexeso/Stage/ServerLobby.fxml"));
+                    FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/Trick/Stage/ServerLobby.fxml"));
                     Parent serverLobbyRoot = fxmlLoader.load();
                     Stage serverLobbyStage = new Stage();
                     serverLobbyStage.setScene(new Scene(serverLobbyRoot, 1024, 768));
-                    serverLobbyStage.setTitle("Čupr Pexeso - Server Lobby");
-                    serverLobbyStage.getIcons().add(new Image("Pexeso/Public/Img/icon.png"));
+                    serverLobbyStage.setTitle("Čupr Trick - Server Lobby");
+                    serverLobbyStage.getIcons().add(new Image("Trick/Public/Img/icon.png"));
                     serverLobbyStage.setResizable(false);
                     serverLobbyStage.show();
                     Main.FXMLLOADER_SERVERLOBBY = fxmlLoader;
@@ -315,16 +296,15 @@ public class GameLobbyController implements Initializable {
             @Override
             public void run() {
                 try {
-                    String oldChatMsg = chatWindow.getText();
                     Stage gameLobbyStage = (Stage) gameLobbyPane.getScene().getWindow();
                     gameLobbyStage.close();
 
-                    FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/Pexeso/Stage/Game.fxml"));
+                    FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/Trick/Stage/Game.fxml"));
                     Parent gameRoot = fxmlLoader.load();
                     Stage gameStage = new Stage();
                     gameStage.setScene(new Scene(gameRoot, 1024, 768));
-                    gameStage.setTitle("Čupr Pexeso - Game");
-                    gameStage.getIcons().add(new Image("Pexeso/Public/Img/icon.png"));
+                    gameStage.setTitle("Čupr Trick - Game");
+                    gameStage.getIcons().add(new Image("Trick/Public/Img/icon.png"));
                     gameStage.setResizable(false);
                     gameStage.show();
                     Main.FXMLLOADER_GAME = fxmlLoader;
@@ -333,7 +313,6 @@ public class GameLobbyController implements Initializable {
                     final GameController g = Main.FXMLLOADER_GAME.getController();
                     g.setThisRoomId(thisRoomId);
                     g.setCardDeck();
-                    g.initChatWindow(oldChatMsg);
                     for (int i = 0; i < (Integer.parseInt(numPlayingText.getText())); i++) {
                         if (i == 0)
                             g.addNewUserUi(i, getUserNameUi(i), "0", "Na tahu");
@@ -354,35 +333,6 @@ public class GameLobbyController implements Initializable {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-            }
-        });
-    }
-
-    public void sendNewMsg() {
-        String msg = chatMsg.getText();
-        if (!msg.equals("") && msg.length() < 32) {
-            String correctedMsg = msg.replaceAll("#", "?");
-            tcpConn.sendChatMsg(thisRoomId, correctedMsg);
-        }
-        chatMsg.clear();
-        chatMsg.requestFocus();
-    }
-
-
-    public void appendUsrMsg(final String userName, final String msg) {
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                chatWindow.appendText(userName + ": " + msg + newLine);
-            }
-        });
-    }
-
-    public void appendSrvrMsg(final String msg) {
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                chatWindow.appendText("[Server] " + msg + newLine);
             }
         });
     }

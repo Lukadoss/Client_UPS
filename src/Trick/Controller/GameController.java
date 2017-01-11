@@ -1,7 +1,7 @@
-package Pexeso.Controller;
+package Trick.Controller;
 
-import Pexeso.Main;
-import Pexeso.TCPClient.TCP;
+import Trick.Main;
+import Trick.TCPClient.TCP;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
@@ -50,15 +50,7 @@ public class GameController implements Initializable {
     public Text turnIndicator;
     @FXML
     public ProgressBar timeIndicator;
-    private static final Image cardBackImg = new Image("/Pexeso/Public/Img/card-back.png");
-
-    //Chatting UI
-    @FXML
-    private TextArea chatWindow;
-    @FXML
-    private TextField chatMsg;
-    @FXML
-    private Button sendChatMsg;
+    private static final Image cardBackImg = new Image("/Trick/Public/Img/card-back.png");
 
     //Joined Users UI
     @FXML
@@ -80,23 +72,10 @@ public class GameController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         this.tcpConn = Main.tcpi;
-        chatWindow.setEditable(false);
-        chatMsg.setOnKeyPressed(new EventHandler<KeyEvent>() {
-            @Override
-            public void handle(KeyEvent ke) {
-                if (ke.getCode().equals(KeyCode.ENTER)) {
-                    sendNewMsg();
-                }
-            }
-        });
     }
 
     public void setThisRoomId(String id) {
         thisRoomId = id;
-    }
-
-    public void initChatWindow(String oldMsg) {
-        chatWindow.setText(oldMsg);
     }
 
     @FXML
@@ -237,12 +216,12 @@ public class GameController implements Initializable {
                     Stage gameStage = (Stage) gamePane.getScene().getWindow();
                     gameStage.close();
 
-                    FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/Pexeso/Stage/ServerLobby.fxml"));
+                    FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/Trick/Stage/ServerLobby.fxml"));
                     Parent serverLobbyRoot = fxmlLoader.load();
                     Stage serverLobbyStage = new Stage();
                     serverLobbyStage.setScene(new Scene(serverLobbyRoot, 1024, 768));
-                    serverLobbyStage.setTitle("Čupr Pexeso - Server Lobby");
-                    serverLobbyStage.getIcons().add(new Image("Pexeso/Public/Img/icon.png"));
+                    serverLobbyStage.setTitle("Čupr Trick - Server Lobby");
+                    serverLobbyStage.getIcons().add(new Image("Trick/Public/Img/icon.png"));
                     serverLobbyStage.setResizable(false);
                     serverLobbyStage.show();
                     Main.FXMLLOADER_SERVERLOBBY = fxmlLoader;
@@ -294,7 +273,7 @@ public class GameController implements Initializable {
     }
 
     public void flipCard(int row, int col, int imgId) {
-        Image flippedCard = new Image("/Pexeso/Public/Img/cards/" + imgId + ".png");
+        Image flippedCard = new Image("/Trick/Public/Img/cards/" + imgId + ".png");
         deck[row][col].setImage(flippedCard);
     }
 
@@ -345,7 +324,6 @@ public class GameController implements Initializable {
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
-                appendSrvrMsg("Konec hry!");
                 Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
                 alert.setTitle("Konec hry");
                 alert.initStyle(StageStyle.UTILITY);
@@ -361,7 +339,7 @@ public class GameController implements Initializable {
                 alert.getButtonTypes().setAll(buttonConf);
                 DialogPane dialogPane = alert.getDialogPane();
                 dialogPane.getStylesheets().add(
-                        getClass().getResource("/Pexeso/Public/Styles/material.css").toExternalForm());
+                        getClass().getResource("/Trick/Public/Styles/material.css").toExternalForm());
                 dialogPane.getStyleClass().add("game-end");
 
                 alert.showAndWait();
@@ -399,15 +377,6 @@ public class GameController implements Initializable {
         } else return "";
     }
 
-    public void sendNewMsg() {
-        String msg = chatMsg.getText();
-        if (!msg.equals("") && msg.length() < 32) {
-            String correctedMsg = msg.replaceAll("#", "?");
-            tcpConn.sendChatMsg(thisRoomId, correctedMsg);
-        }
-        chatMsg.clear();
-    }
-
     public void quitRoom() {
         try {
             GameLobbyController g = Main.FXMLLOADER_GAMELOBBY.getController();
@@ -416,24 +385,6 @@ public class GameController implements Initializable {
         } catch (IOException e) {
 
         }
-    }
-
-    public void appendUsrMsg(final String userName, final String msg) {
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                chatWindow.appendText(userName + ": " + msg + newLine);
-            }
-        });
-    }
-
-    public void appendSrvrMsg(final String msg) {
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                chatWindow.appendText("[Server] " + msg + newLine);
-            }
-        });
     }
 
     public void setStatusText(final String text, final boolean err) {

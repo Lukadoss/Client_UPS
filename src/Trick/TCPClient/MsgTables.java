@@ -1,4 +1,4 @@
-package Pexeso.TCPClient;
+package Trick.TCPClient;
 
 public class MsgTables {
     public static String getType(MsgTypes msgType) {

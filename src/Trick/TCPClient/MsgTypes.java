@@ -1,4 +1,4 @@
-package Pexeso.TCPClient;
+package Trick.TCPClient;
 
 public enum MsgTypes {
     C_LOGIN, //přihlášení uživatele

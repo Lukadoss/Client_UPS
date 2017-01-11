@@ -1,14 +1,14 @@
-package Pexeso.Thread;
+package Trick.TCPClient;
 
-import Pexeso.Controller.GameController;
-import Pexeso.Controller.GameLobbyController;
-import Pexeso.Controller.LoginController;
-import Pexeso.Controller.ServerLobbyController;
-import Pexeso.Main;
-import Pexeso.TCPClient.ClientInfo;
-import Pexeso.TCPClient.MsgTables;
-import Pexeso.TCPClient.MsgTypes;
-import Pexeso.TCPClient.TCP;
+import Trick.Controller.GameController;
+import Trick.Controller.GameLobbyController;
+import Trick.Controller.LoginController;
+import Trick.Controller.ServerLobbyController;
+import Trick.Main;
+import Trick.TCPClient.ClientInfo;
+import Trick.TCPClient.MsgTables;
+import Trick.TCPClient.MsgTypes;
+import Trick.TCPClient.TCP;
 
 import java.io.IOException;
 
@@ -41,9 +41,11 @@ public class ClientListener implements Runnable {
                 if (message != null && !message.equals("")) {
                     processMessage(message);
                 } else {
-                    LoginController l = Main.FXMLLOADER_LOGIN.getController();
+                    if (Main.parentWindow!=null) {
+                        LoginController l = Main.FXMLLOADER_LOGIN.getController();
+                        l.setDiscLoginUi();
+                    }
                     ClientListenerRunning = false;
-                    l.setDiscLoginUi();
                 }
             } catch (Exception ex) {
                 tcpInfo.disconnect();
@@ -77,13 +79,8 @@ public class ClientListener implements Runnable {
                 tcpInfo.sendMsg(connString);
                 break;
             case "S_USR_JOINED":
-                try {
                     serverLobbyController = Main.FXMLLOADER_SERVERLOBBY.getController();
-                    serverLobbyController.setGameLobbyScene(splittedMsg[1], splittedMsg[2], splittedMsg[3], splittedMsg[4]);
                     Main.clientInfo.setActiveRoom(Integer.parseInt(splittedMsg[1]));
-                } catch (IOException e) {
-                    //TODO
-                }
                 break;
             case "S_JOIN_ERR":
                 serverLobbyController = Main.FXMLLOADER_SERVERLOBBY.getController();
@@ -103,48 +100,48 @@ public class ClientListener implements Runnable {
                     gameLobbyController.unsetReadyBtn();
                 }
                 break;
-            case "S_ROOM_READY":
-                try {
-                    Main.clientInfo.setRoomIndex(Integer.parseInt(splittedMsg[2]));
-                    gameLobbyController = Main.FXMLLOADER_GAMELOBBY.getController();
-                    gameLobbyController.appendSrvrMsg("Všichni hráči připraveni, hra začíná!");
-                    gameLobbyController.setGameScene();
-                } catch (IOException e) {
-                    //TODO
-                }
-                break;
-            case "S_CHAT_USR":
-                if (splittedMsg[3].equals("0")) {
-                    gameLobbyController = Main.FXMLLOADER_GAMELOBBY.getController();
-                    gameLobbyController.appendUsrMsg(splittedMsg[1], splittedMsg[2]);
-                    break;
-                } else if (splittedMsg[3].equals("1")) {
-                    gameController = Main.FXMLLOADER_GAME.getController();
-                    gameController.appendUsrMsg(splittedMsg[1], splittedMsg[2]);
-                    break;
-                }
-            case "S_TIME_NOTIFY":
-                    gameController = Main.FXMLLOADER_GAME.getController();
-                    gameController.appendSrvrMsg(gameController.getUserName(Integer.parseInt(splittedMsg[1])) + ", jsi na tahu. Zbývá ti 10 vteřin.");
-                    break;
+//            case "S_ROOM_READY":
+//                try {
+//                    Main.clientInfo.setRoomIndex(Integer.parseInt(splittedMsg[2]));
+//                    gameLobbyController = Main.FXMLLOADER_GAMELOBBY.getController();
+//                    gameLobbyController.appendSrvrMsg("Všichni hráči připraveni, hra začíná!");
+//                    gameLobbyController.setGameScene();
+//                } catch (IOException e) {
+//                    //TODO
+//                }
+//                break;
+//            case "S_CHAT_USR":
+//                if (splittedMsg[3].equals("0")) {
+//                    gameLobbyController = Main.FXMLLOADER_GAMELOBBY.getController();
+//                    gameLobbyController.appendUsrMsg(splittedMsg[1], splittedMsg[2]);
+//                    break;
+//                } else if (splittedMsg[3].equals("1")) {
+//                    gameController = Main.FXMLLOADER_GAME.getController();
+//                    gameController.appendUsrMsg(splittedMsg[1], splittedMsg[2]);
+//                    break;
+//                }
+//            case "S_TIME_NOTIFY":
+//                    gameController = Main.FXMLLOADER_GAME.getController();
+//                    gameController.appendSrvrMsg(gameController.getUserName(Integer.parseInt(splittedMsg[1])) + ", jsi na tahu. Zbývá ti 10 vteřin.");
+//                    break;
             case "S_ROOM_USER_INFO":
                 gameLobbyController = Main.FXMLLOADER_GAMELOBBY.getController();
                 gameLobbyController.addNewUserUi(Integer.parseInt(splittedMsg[1]), splittedMsg[2], Integer.parseInt(splittedMsg[3]), "0");
                 String connString2 = MsgTables.getType(MsgTypes.C_USER_UPDATE) + ":" + splittedMsg[1] + "#";
                 tcpInfo.sendMsg(connString2);
                 break;
-            case "S_ROOM_UPDATE":
-                gameLobbyController = Main.FXMLLOADER_GAMELOBBY.getController();
-                gameLobbyController.updateRoomUi(splittedMsg[1], splittedMsg[2]);
-                if (splittedMsg[3].equals("1")) {
-                    gameLobbyController.addNewUserUi(Integer.parseInt(splittedMsg[4]), splittedMsg[5], 0, "0");
-                    gameLobbyController.appendSrvrMsg("Hráč " + splittedMsg[5] + " se připojil.");
-                }
-                if (splittedMsg[3].equals("0")) {
-                    gameLobbyController.removeUserUi(Integer.parseInt(splittedMsg[4]));
-                    gameLobbyController.appendSrvrMsg("Hráč " + splittedMsg[5] + " odešel z místnosti.");
-                }
-                break;
+//            case "S_ROOM_UPDATE":
+//                gameLobbyController = Main.FXMLLOADER_GAMELOBBY.getController();
+//                gameLobbyController.updateRoomUi(splittedMsg[1], splittedMsg[2]);
+//                if (splittedMsg[3].equals("1")) {
+//                    gameLobbyController.addNewUserUi(Integer.parseInt(splittedMsg[4]), splittedMsg[5], 0, "0");
+//                    gameLobbyController.appendSrvrMsg("Hráč " + splittedMsg[5] + " se připojil.");
+//                }
+//                if (splittedMsg[3].equals("0")) {
+//                    gameLobbyController.removeUserUi(Integer.parseInt(splittedMsg[4]));
+//                    gameLobbyController.appendSrvrMsg("Hráč " + splittedMsg[5] + " odešel z místnosti.");
+//                }
+//                break;
             case "S_TURNED":
                 gameController = Main.FXMLLOADER_GAME.getController();
                 gameController.flipCard(Integer.parseInt(splittedMsg[1]), Integer.parseInt(splittedMsg[2]), Integer.parseInt(splittedMsg[3]));

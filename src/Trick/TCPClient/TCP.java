@@ -1,7 +1,8 @@
-package Pexeso.TCPClient;
+package Trick.TCPClient;
 
-import Pexeso.Controller.LoginController;
-import Pexeso.Main;
+import Trick.Controller.LoginController;
+import Trick.Controller.ServerLobbyController;
+import Trick.Main;
 import javafx.fxml.FXML;
 
 import java.io.BufferedReader;
@@ -22,13 +23,13 @@ public class TCP {
     }
 
 
-    public boolean connect(InetAddress IP, int Port) {
+    public boolean connect() {
         try {
-            socket = new Socket(IP, Port);
+            socket = new Socket(serverIP, serverPort);
             return true;
         } catch (IOException e) {
             LoginController controller = Main.FXMLLOADER_LOGIN.getController();
-            controller.setStatusText("Připojení k serveru " + IP + ":" + Port + " se nezdařilo", 3000);
+            controller.setStatusText("Připojení k serveru " + serverIP + ":" + serverPort + " se nezdařilo", 3000);
             return false;
         } catch (IllegalArgumentException e) {
             LoginController controller = Main.FXMLLOADER_LOGIN.getController();
@@ -56,7 +57,6 @@ public class TCP {
         return 0;
     }
 
-    @FXML
     public void getRoomsTable() {
         String connString = MsgTables.getType(MsgTypes.C_GET_TABLE) + "#";
         sendMsg(connString);
@@ -87,11 +87,6 @@ public class TCP {
         }
     }
 
-    public void sendChatMsg(String roomId, String msg) {
-        String connString = MsgTables.getType(MsgTypes.C_CHAT) + ":" + roomId + ":" + msg + "#";
-        sendMsg(connString);
-    }
-
     public void pickedCard(String roomId, int row, int col) {
         String connString = MsgTables.getType(MsgTypes.C_TURN_CARD) + ":" + roomId + ":" + row + ":" + col + "#";
         sendMsg(connString);
@@ -103,6 +98,10 @@ public class TCP {
     }
 
     public void sendMsg(String data) {
+        if (Main.FXMLLOADER_SERVERLOBBY!=null) {
+            ServerLobbyController controller = Main.FXMLLOADER_SERVERLOBBY.getController();
+            controller.console.setText(controller.console.getText()+data + "\n");
+        }
         try {
             if (socket != null) {
                 DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
@@ -137,13 +136,5 @@ public class TCP {
             return null;
         }
         return null;
-    }
-
-    public void getConnectedUsers() {
-
-    }
-
-    public Socket getSocket() {
-        return socket;
     }
 }

@@ -1,8 +1,8 @@
-package Pexeso.Controller;
+package Trick.Controller;
 
-import Pexeso.Main;
-import Pexeso.TCPClient.MsgTables;
-import Pexeso.TCPClient.TCP;
+import Trick.Main;
+import Trick.TCPClient.MsgTables;
+import Trick.TCPClient.TCP;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -12,16 +12,22 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -45,7 +51,13 @@ public class ServerLobbyController implements Initializable {
     @FXML
     public TableView<Room> lobbyTable;
     @FXML
-    public TableColumn<Room, String> tableRoomId, tableRoomName, tableConnPlayers, tableMaxPlayers, tableRoomStatus;
+    public TableColumn<Room, String> tableRoomId, tableRoomName, tableConnPlayers, tableMaxPlayers;
+    @FXML
+    public Text player1, player2, player3, player4, player5, player6, player7, player1r, player2r, player3r, player4r, player5r, player6r, player7r;
+    @FXML
+    public TextArea console;
+    @FXML
+    public VBox vboxUI;
 
     public static class Room {
         private final SimpleStringProperty roomId;
@@ -125,14 +137,6 @@ public class ServerLobbyController implements Initializable {
                 refreshTable();
             }
         });
-        lobbyTable.setOnMousePressed(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                if (event.isPrimaryButtonDown() && event.getClickCount() == 2) {
-                    assign();
-                }
-            }
-        });
     }
 
     public void refreshTable() {
@@ -154,46 +158,6 @@ public class ServerLobbyController implements Initializable {
                 new PropertyValueFactory<Room, String>("connPlayers"));
         tableMaxPlayers.setCellValueFactory(
                 new PropertyValueFactory<Room, String>("maxPlayers"));
-        tableRoomStatus.setCellValueFactory(
-                new PropertyValueFactory<Room, String>("roomStatus"));
-    }
-
-    public void setGameLobbyScene(final String roomId, final String numPlaying, final String maxPlaying, final String roomStatus) throws IOException {
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Stage serverLobbyStage = (Stage) serverLobbyPane.getScene().getWindow();
-                    serverLobbyStage.close();
-
-                    FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/Pexeso/Stage/GameLobby.fxml"));
-                    Parent gameLobbyRoot = fxmlLoader.load();
-                    Stage gameLobbyStage = new Stage();
-                    gameLobbyStage.setScene(new Scene(gameLobbyRoot, 1024, 768));
-                    gameLobbyStage.setTitle("Čupr Pexeso - Game Room Lobby - Herní místnost " + roomId);
-                    gameLobbyStage.getIcons().add(new Image("Pexeso/Public/Img/icon.png"));
-                    gameLobbyStage.setResizable(false);
-                    gameLobbyStage.show();
-                    Main.FXMLLOADER_GAMELOBBY = fxmlLoader;
-
-                    GameLobbyController g = Main.FXMLLOADER_GAMELOBBY.getController();
-                    GameLobbyController.thisRoomId = roomId;
-                    g.setRoomInfo(roomId, numPlaying, maxPlaying, roomStatus);
-                    g.setJoinedUsers();
-
-                    gameLobbyStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-                        @Override
-                        public void handle(WindowEvent event) {
-                            Main.tcpi.disconnect();
-                            System.exit(0);
-
-                        }
-                    });
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
     }
 
     public void setStatusText(final String text, final boolean err) {
@@ -226,7 +190,37 @@ public class ServerLobbyController implements Initializable {
             Room room = lobbyTable.getSelectionModel().getSelectedItem();
             if (room.connPlayers != room.maxPlayers)
                 tcpConn.joinRoom(Integer.parseInt(room.getRoomId()));
-        } catch (NullPointerException e) {
+        } catch (NullPointerException ignored) {
         }
+    }
+
+    @FXML
+    public void addNewUserUi(final int userIndex, final String name, final int ready,final String score) {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                Text userName = new Text();
+                userName.setText(name.toUpperCase());
+                userName.setFont(Font.font("Verdana", FontWeight.BOLD, 30));
+                Text userScore = new Text();
+                userScore.setText("Skóre: " + score);
+                userScore.setFill(Color.rgb(117, 117, 117, .99));
+                Text userReady = new Text();
+                if(ready == 1){
+                    userReady.setText("Připraven!");
+                }
+                else {
+                    userReady.setText("");
+                }
+                userReady.setFill(Color.rgb(33, 150, 243, .99));
+                userReady.setFont(Font.font("Verdana", FontWeight.BOLD, 16));
+
+                VBox vbox = new VBox();
+                vbox = vboxUI;
+                vbox.getChildren().add(1, userName);
+                vbox.setAlignment(Pos.CENTER);
+                vbox.setSpacing(5);
+            }
+        });
     }
 }
