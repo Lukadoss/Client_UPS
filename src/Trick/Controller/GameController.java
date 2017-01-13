@@ -16,6 +16,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -28,6 +29,7 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 
 import java.net.URL;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 /**
@@ -35,7 +37,11 @@ import java.util.ResourceBundle;
  */
 public class GameController implements Initializable {
     private TCP tcpConn;
+    private boolean onTurn = false;
+    private int r,g,b,k;
 
+    @FXML
+    public Pane mainGamePane;
     @FXML
     public Text statusText;
     @FXML
@@ -136,7 +142,8 @@ public class GameController implements Initializable {
                 line.setLayoutX(116);
                 line.setStartY(163);
                 Line line1 = new Line();
-                line.setStartY(163);
+                line1.setLayoutX(0);
+                line1.setStartY(163);
 
                 Pane pane = new Pane();
                 pane.getChildren().add(0, userName);
@@ -225,7 +232,10 @@ public class GameController implements Initializable {
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
-                int r=0, g=0, b=0, k=0;
+                r=0;
+                g=0;
+                b=0;
+                k=0;
                 for (int i=1;i<splittedMsg.length;i++){
                     switch (splittedMsg[i]){
                         case "K":
@@ -243,40 +253,19 @@ public class GameController implements Initializable {
                     }
                 }
                 hboxCards.setVisible(true);
-                for (Node pn:hboxCards.getChildren()) {
-                    if (pn instanceof Pane){
-                        Node num = ((Pane) pn).getChildren().get(0);
-                        if (num instanceof Text){
-                            switch (((Text) num).getText()){
-                                case "K":
-                                    ((Text) num).setText(""+k);
-                                    break;
-                                case "B":
-                                    ((Text) num).setText(""+b);
-                                    break;
-                                case "G":
-                                    ((Text) num).setText(""+g);
-                                    break;
-                                case "R":
-                                    ((Text) num).setText(""+r);
-                                    break;
-                            }
-                        }
-                    }
-                }
-                Node nd = hboxCards.getChildren().remove(0);
+                mainGamePane.setVisible(true);
+                playerr.setText("HRAJEŠ!");
+                playerr.setVisible(false);
 
                 for (Node pn:hboxUI.getChildren()) {
                     if (pn instanceof Pane){
-                        Node in = ((Pane) pn).getChildren().get(0);
-                        if (in instanceof Text){
-                            if (!((Text) in).getText().equals("")){
-                                Node rdy = ((Pane) pn).getChildren().get(1);
-                                ((Text) rdy).setText("Počet karet: "+(splittedMsg.length-1));
-                                rdy = ((Pane) pn).getChildren().get(1);
-                                ((Text) rdy).setText("HRAJE!");
-                                rdy.setVisible(false);
-                            }
+                        Node rdy = ((Pane) pn).getChildren().get(0);
+                        if (rdy instanceof Text){
+                            rdy = ((Pane) pn).getChildren().get(1);
+                            ((Text) rdy).setText("Počet karet: "+(splittedMsg.length-1));
+                            rdy = ((Pane) pn).getChildren().get(2);
+                            ((Text) rdy).setText("HRAJE!");
+                            rdy.setVisible(false);
                         }
                     }
                 }
@@ -291,5 +280,113 @@ public class GameController implements Initializable {
                 console.setText(console.getText()+s+"\n");
             }
         });
+    }
+
+    public void setOnTurn(String name, int cardNum) {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                for (Node pn:hboxUI.getChildren()) {
+                    if (pn instanceof Pane){
+                        Node rdy = ((Pane) pn).getChildren().get(0);
+                        if (rdy instanceof Text) {
+                            rdy = ((Pane) pn).getChildren().get(2);
+                            rdy.setVisible(false);
+                        }
+                    }
+                }
+
+                onTurn = Main.userName.equals(name);
+                if(onTurn){
+                    int i=0;
+                    playerr.setVisible(true);
+                    for (Node pn:hboxCards.getChildren()) {
+                        if (pn instanceof Pane){
+                            Node num = ((Pane) pn).getChildren().get(0);
+                            i++;
+                            if (num instanceof Text){
+                                switch (i){
+                                    case 1:
+                                        ((Text) num).setText(""+k);
+                                        break;
+                                    case 2:
+                                        ((Text) num).setText(""+b);
+                                        break;
+                                    case 3:
+                                        ((Text) num).setText(""+g);
+                                        break;
+                                    case 4:
+                                        ((Text) num).setText(""+r);
+                                        break;
+                                }
+                            }
+                        }
+                    }
+                }else{
+                    for (Node pn:hboxUI.getChildren()) {
+                        if (pn instanceof Pane){
+                            Node rdy = ((Pane) pn).getChildren().get(0);
+                            if (rdy instanceof Text){
+                                if (((Text) rdy).getText().equals(name))
+                                rdy = ((Pane) pn).getChildren().get(1);
+                                ((Text) rdy).setText("Počet karet: "+(cardNum-1));
+                                rdy = ((Pane) pn).getChildren().get(2);
+                                rdy.setVisible(true);
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    public void sendBlack(MouseEvent mouseEvent) {
+        if (onTurn){
+            if(b!=0) {
+                tcpConn.putCard("B");
+            }
+        }
+    }
+
+    public void sendGreen(MouseEvent mouseEvent) {
+        if (onTurn){
+            if(b!=0) {
+                tcpConn.putCard("G");
+            }
+        }
+    }
+
+    public void sendRed(MouseEvent mouseEvent) {
+        if (onTurn){
+            if(b!=0) {
+                tcpConn.putCard("R");
+            }
+        }
+    }
+
+    public void sendBrown(MouseEvent mouseEvent) {
+        if (onTurn){
+            if(b!=0) {
+                tcpConn.putCard("K");
+            }
+        }
+    }
+
+    public void lostCard(String s){
+        switch (s){
+            case "K":
+                k--;
+                break;
+            case "B":
+                b--;
+                break;
+            case "G":
+                g--;
+                break;
+            case "R":
+                r--;
+                break;
+        }
+        setOnTurn(Main.userName, 0);
     }
 }

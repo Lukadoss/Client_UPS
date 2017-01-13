@@ -96,12 +96,18 @@ public class ClientListener implements Runnable {
                 gameController.setReady();
                 break;
             case "S_CONSOLE_INFO":
-                gameController.writeToConsole(splittedMsg[1]);
+                if (gameController!= null) gameController.writeToConsole(splittedMsg[1]);
                 break;
             case "S_ROOM_READY":
                 break;
             case "S_CARDS_OWNED":
                 gameController.readyTable(splittedMsg);
+                break;
+            case "S_ON_TURN":
+                gameController.setOnTurn(splittedMsg[1], Integer.parseInt(splittedMsg[2]));
+                break;
+            case "S_CARD_LOST":
+                gameController.lostCard(splittedMsg[1]);
                 break;
 //            case "S_USR_NREADY":
 //                gameLobbyController = Main.FXMLLOADER_GAMELOBBY.getController();

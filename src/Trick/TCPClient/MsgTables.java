@@ -13,6 +13,8 @@ public class MsgTables {
                 return "C_TURN_ACK";
             case C_ROOM_INFO:
                 return "C_ROOM_INFO";
+            case C_PUT_CARD:
+                return "C_PUT_CARD";
             default:
                 return "";
         }
