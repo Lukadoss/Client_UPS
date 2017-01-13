@@ -66,7 +66,7 @@ public class LoginController {
                 try {
                     ((Stage) loginPane.getScene().getWindow()).close();
 
-                    FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/Trick/Stage/Game.fxml"));
+                    FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/Stage/Game.fxml"));
                     Parent serverLobbyRoot = fxmlLoader.load();
                     final Stage serverLobbyStage = new Stage();
                     serverLobbyStage.setScene(new Scene(serverLobbyRoot, 1024, 768));
@@ -96,7 +96,7 @@ public class LoginController {
                 try {
                     Main.parentWindow.close();
 
-                    FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/Trick/Stage/Login.fxml"));
+                    FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/Stage/Login.fxml"));
                     Parent root = fxmlLoader.load();
                     final Stage loginStage = new Stage();
                     loginStage.setTitle("Login");
