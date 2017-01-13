@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.paint.RadialGradient?>
+<?import javafx.scene.paint.Stop?>
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<GridPane fx:id="serverLobbyPane" alignment="center" hgap="10" vgap="10" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Trick.Controller.GameController">
+    <children>
+        <Pane prefHeight="768.0" prefWidth="1024.0">
+            <children>
+                <ToolBar layoutY="740.0" prefHeight="25.0" prefWidth="1024.0">
+                    <items>
+                        <Text fx:id="statusText" strokeType="OUTSIDE" strokeWidth="0.0" text="Status" />
+                        <Pane HBox.hgrow="ALWAYS" />
+                    </items>
+                </ToolBar>
+                <AnchorPane prefHeight="735.0" prefWidth="1024.0">
+                    <children>
+                        <Text layoutX="443.0" layoutY="38.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Herní lobby">
+                            <font>
+                                <Font size="24.0" />
+                            </font>
+                        </Text>
+                    </children>
+                </AnchorPane>
+            <VBox fx:id="vboxUI" layoutX="24.0" layoutY="57.0" prefHeight="682.0" prefWidth="977.0">
+               <children>
+                  <HBox fx:id="hboxUI" alignment="CENTER" maxWidth="-Infinity" prefHeight="163.0" prefWidth="700.0" />
+                  <AnchorPane prefHeight="518.0" prefWidth="979.0">
+                     <children>
+                        <Text fx:id="player" layoutY="492.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Name" textAlignment="CENTER" wrappingWidth="692.0">
+                           <font>
+                              <Font size="40.0" />
+                           </font>
+                        </Text>
+                        <Button fx:id="ready" layoutX="836.0" layoutY="451.0" mnemonicParsing="false" onAction="#setUserReady" prefHeight="56.0" prefWidth="137.0" text="Připraven" />
+                        <Text fx:id="playerr" fill="RED" layoutX="692.0" layoutY="486.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Nepřipraven" textAlignment="CENTER" wrappingWidth="130.0">
+                           <font>
+                              <Font size="20.0" />
+                           </font>
+                        </Text>
+                        <TextArea fx:id="console" editable="false" layoutX="703.0" layoutY="-164.0" prefHeight="606.0" prefWidth="270.0" wrapText="true" />
+                        <HBox fx:id="hboxCards" alignment="CENTER" layoutX="6.0" layoutY="279.0" prefHeight="163.0" prefWidth="681.0" spacing="50" visible="false">
+                           <children>
+                              <Pane maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="170.0" prefWidth="116.0">
+                                 <HBox.margin>
+                                    <Insets />
+                                 </HBox.margin>
+                                 <children>
+                                    <Text layoutY="146.0" strokeType="OUTSIDE" strokeWidth="0.0" text="R" textAlignment="CENTER" wrappingWidth="116.0" />
+                                    <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#ff1f1f" height="100.0" layoutX="8.0" layoutY="8.0" onMousePressed="#sendRed" stroke="BLACK" strokeType="INSIDE" width="100.0">
+                                       <cursor>
+                                          <Cursor fx:constant="HAND" />
+                                       </cursor></Rectangle>
+                                 </children>
+                              </Pane>
+                              <Pane layoutX="293.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="170.0" prefWidth="116.0">
+                                 <children>
+                                    <Text layoutY="146.0" strokeType="OUTSIDE" strokeWidth="0.0" text="G" textAlignment="CENTER" wrappingWidth="116.0" />
+                                    <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#21ff2c" height="100.0" layoutX="8.0" layoutY="8.0" onMousePressed="#sendGreen" stroke="BLACK" strokeType="INSIDE" width="100.0">
+                                       <cursor>
+                                          <Cursor fx:constant="HAND" />
+                                       </cursor></Rectangle>
+                                 </children>
+                              </Pane>
+                              <Pane layoutX="376.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="170.0" prefWidth="116.0">
+                                 <children>
+                                    <Text layoutY="146.0" strokeType="OUTSIDE" strokeWidth="0.0" text="B" textAlignment="CENTER" wrappingWidth="116.0" />
+                                    <Rectangle arcHeight="5.0" arcWidth="5.0" height="100.0" layoutX="8.0" layoutY="8.0" onMousePressed="#sendBlack" stroke="BLACK" strokeType="INSIDE" width="100.0">
+                                       <cursor>
+                                          <Cursor fx:constant="HAND" />
+                                       </cursor></Rectangle>
+                                 </children>
+                              </Pane>
+                              <Pane layoutX="459.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="170.0" prefWidth="116.0">
+                                 <children>
+                                    <Text layoutY="146.0" strokeType="OUTSIDE" strokeWidth="0.0" text="K" textAlignment="CENTER" wrappingWidth="116.0" />
+                                    <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#9e6401" height="100.0" layoutX="8.0" layoutY="8.0" onMousePressed="#sendBrown" stroke="BLACK" strokeType="INSIDE" width="100.0">
+                                       <cursor>
+                                          <Cursor fx:constant="HAND" />
+                                       </cursor></Rectangle>
+                                 </children>
+                              </Pane>
+                           </children>
+                        </HBox>
+                        <Pane fx:id="mainGamePane" layoutX="96.0" layoutY="39.0" prefHeight="200.0" prefWidth="500.0" visible="false">
+                           <children>
+                              <Text layoutX="175.0" layoutY="119.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Počet karet" textAlignment="CENTER" wrappingWidth="150.0">
+                                 <font>
+                                    <Font size="50.0" />
+                                 </font>
+                              </Text>
+                              <Rectangle arcHeight="5.0" arcWidth="5.0" blendMode="DARKEN" height="200.0" layoutX="175.0" stroke="BLACK" strokeType="INSIDE" width="150.0">
+                                 <fill>
+                                    <RadialGradient centerX="0.48314606741573035" centerY="0.5" radius="0.5">
+                                       <stops>
+                                          <Stop color="#ababab" />
+                                          <Stop color="WHITE" offset="1.0" />
+                                       </stops>
+                                    </RadialGradient>
+                                 </fill>
+                              </Rectangle>
+                              <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="100.0" layoutX="368.0" layoutY="68.0" stroke="BLACK" strokeType="INSIDE" width="100.0" />
+                              <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="100.0" layoutX="37.0" layoutY="68.0" stroke="BLACK" strokeType="INSIDE" width="100.0" />
+                              <Text layoutX="37.0" layoutY="37.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Barva karty na vrchu balíčku:" textAlignment="CENTER" wrappingWidth="100.0" />
+                              <Text layoutX="368.0" layoutY="37.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Barva karty ve spodu balíčku:" textAlignment="CENTER" wrappingWidth="100.0" />
+                              <Text layoutX="37.0" layoutY="181.0" strokeType="OUTSIDE" strokeWidth="0.0" text="(až po otočení)" textAlignment="CENTER" wrappingWidth="100.0" />
+                           </children></Pane>
+                     </children>
+                  </AnchorPane>
+               </children>
+            </VBox>
+            </children>
+        </Pane>
+    </children>
+    <columnConstraints>
+        <ColumnConstraints />
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints />
+    </rowConstraints>
+</GridPane>
