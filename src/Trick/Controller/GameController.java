@@ -88,62 +88,65 @@ public class GameController implements Initializable {
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
-                for (Node pn:hboxUI.getChildren()) {
-                    if (pn instanceof Pane){
-                        Node in = ((Pane) pn).getChildren().get(0);
-                        if (in instanceof Text){
-                            if (((Text) in).getText().equals("")){
-                                Node rdy = ((Pane) pn).getChildren().get(0);
-                                ((Text) rdy).setText(name);
+//                for (Node pn:hboxUI.getChildren()) {
+//                    if (pn instanceof Pane){
+//                        Node in = ((Pane) pn).getChildren().get(0);
+//                        if (in instanceof Text){
+//                            if (((Text) in).getText().equals("")){
+//                                Node rdy = ((Pane) pn).getChildren().get(0);
+//                                ((Text) rdy).setText(name);
+//
+//                                rdy = ((Pane) pn).getChildren().get(2);
+//                                ((Text) rdy).setText("Nepřipraven");
+//                                ((Text) rdy).setFill(Color.RED);
+//                                break;
+//                            }
+//                        }
+//                    }
+//                }
+                Text userName = new Text();
+                userName.setText(name);
+                userName.setFont(Font.font("Verdana", FontWeight.SEMI_BOLD, 25));
+                userName.setLayoutY(60);
+                userName.setTextAlignment(TextAlignment.CENTER);
+                userName.setWrappingWidth(116);
 
-                                rdy = ((Pane) pn).getChildren().get(2);
-                                ((Text) rdy).setText("Nepřipraven");
-                                ((Text) rdy).setFill(Color.RED);
-                                break;
-                            }
-                        }
-                    }
+                Text userReady = new Text();
+                if(ready!=1) {
+                    userReady.setText("Nepřipraven");
+                    userReady.setFill(Color.RED);
                 }
-//                Text userName = new Text();
-//                userName.setText(name);
-//                userName.setFont(Font.font("Verdana", FontWeight.SEMI_BOLD, 25));
-//                userName.setLayoutY(60);
-//                userName.setTextAlignment(TextAlignment.CENTER);
-//                userName.setWrappingWidth(116);
-//
-//                Text userReady = new Text();
-//                if(ready!=1) {
-//                    userReady.setText("Nepřipraven");
-//                    userReady.setFill(Color.RED);
-//                }
-//                else {
-//                    userReady.setText("Připraven");
-//                    userReady.setFill(Color.GREEN);
-//                }
-//                userReady.setFont(Font.font("Verdana", FontWeight.NORMAL, 12));
-//                userReady.setLayoutY(125);
-//                userReady.setTextAlignment(TextAlignment.CENTER);
-//                userReady.setWrappingWidth(116);
-//
-//                Text cardNum = new Text();
-//                cardNum.setFont(Font.font("Verdana", FontWeight.NORMAL, 12));
-//                cardNum.setLayoutY(100);
-//                cardNum.setWrappingWidth(116);
-//                cardNum.setTextAlignment(TextAlignment.CENTER);
-//                cardNum.setText("Počet karet:");
-//
-//                Line line = new Line();
-//                line.setLayoutX(116);
-//                line.setStartY(163);
-//
-//                Pane pane = new Pane();
-//                pane.getChildren().add(0, userName);
-//                pane.getChildren().add(1, cardNum);
-//                pane.getChildren().add(2, userReady);
-//                pane.getChildren().add(3, line);
-//                pane.setPrefHeight(156);
-//                pane.setPrefWidth(116);
-//                hboxUI.getChildren().add(userIndex, pane);
+                else {
+                    userReady.setText("Připraven");
+                    userReady.setFill(Color.GREEN);
+                }
+                userReady.setFont(Font.font("Verdana", FontWeight.NORMAL, 12));
+                userReady.setLayoutY(125);
+                userReady.setTextAlignment(TextAlignment.CENTER);
+                userReady.setWrappingWidth(116);
+
+                Text cardNum = new Text();
+                cardNum.setFont(Font.font("Verdana", FontWeight.NORMAL, 12));
+                cardNum.setLayoutY(100);
+                cardNum.setWrappingWidth(116);
+                cardNum.setTextAlignment(TextAlignment.CENTER);
+                cardNum.setText("Počet karet:");
+
+                Line line = new Line();
+                line.setLayoutX(116);
+                line.setStartY(163);
+                Line line1 = new Line();
+                line.setStartY(163);
+
+                Pane pane = new Pane();
+                pane.getChildren().add(0, userName);
+                pane.getChildren().add(1, cardNum);
+                pane.getChildren().add(2, userReady);
+                pane.getChildren().add(3, line);
+                pane.getChildren().add(4, line1);
+                pane.setPrefHeight(156);
+                pane.setPrefWidth(116);
+                hboxUI.getChildren().add(userIndex, pane);
             }
         });
     }
@@ -159,44 +162,19 @@ public class GameController implements Initializable {
                         Node in = ((Pane) pn).getChildren().get(0);
                         if (in instanceof Text){
                             if (((Text) in).getText().equals(name)){
-                                Node rdy = ((Pane) pn).getChildren().get(0);
-                                ((Text) rdy).setText("");
-                                rdy = ((Pane) pn).getChildren().get(1);
-                                ((Text) rdy).setText("");
-                                rdy = ((Pane) pn).getChildren().get(2);
-                                ((Text) rdy).setText("");
+                                hboxUI.getChildren().remove(pn);
+//                                Node rdy = ((Pane) pn).getChildren().get(0);
+//                                ((Text) rdy).setText("");
+//                                rdy = ((Pane) pn).getChildren().get(1);
+//                                ((Text) rdy).setText("");
+//                                rdy = ((Pane) pn).getChildren().get(2);
+//                                ((Text) rdy).setText("");
                                 break;
                             }
                             x++;
                         }
                     }
                 }
-//TODO:Nejde to spravne
-//                for (int i = x; i<hboxUI.getChildren().size();i++){
-//                    Node pn = hboxUI.getChildren().get(i);
-//                    if (pn instanceof Pane){
-//                        Node in = ((Pane) pn).getChildren().get(0);
-//                        if (in instanceof Text) {
-//                            if (!(((Text) in).getText().equals(""))) {
-//                                Node pr = hboxUI.getChildren().get(x);
-//                                if (pr instanceof Pane) {
-//                                    Node rdy = ((Pane) pr).getChildren().get(0);
-//                                    ((Text) rdy).setText(((Text)((Pane) pn).getChildren().get(0)).getText());
-//                                    ((Text)((Pane) pn).getChildren().get(0)).setText("");
-//
-//                                    rdy = ((Pane) pr).getChildren().get(1);
-//                                    ((Text) rdy).setText(((Text)((Pane) pn).getChildren().get(1)).getText());
-//                                    ((Text)((Pane) pn).getChildren().get(1)).setText("");
-//
-//                                    rdy = ((Pane) pr).getChildren().get(2);
-//                                    ((Text) rdy).setText(((Text)((Pane) pn).getChildren().get(2)).getText());
-//                                    ((Text)((Pane) pn).getChildren().get(2)).setText("");
-//                                }
-//                            }
-//                        }
-//                    }
-//                }
-
             }
         });
     }
@@ -244,42 +222,66 @@ public class GameController implements Initializable {
     }
 
     public void readyTable(String[] splittedMsg) {
-        int r=0, g=0, b=0, k=0;
-        for (int i=1;i<splittedMsg.length;i++){
-            switch (splittedMsg[i]){
-                case "K":
-                    k++;
-                    break;
-                case "B":
-                    b++;
-                    break;
-                case "G":
-                    g++;
-                    break;
-                case "R":
-                    r++;
-                    break;
-            }
-        }
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                int r=0, g=0, b=0, k=0;
+                for (int i=1;i<splittedMsg.length;i++){
+                    switch (splittedMsg[i]){
+                        case "K":
+                            k++;
+                            break;
+                        case "B":
+                            b++;
+                            break;
+                        case "G":
+                            g++;
+                            break;
+                        case "R":
+                            r++;
+                            break;
+                    }
+                }
+                hboxCards.setVisible(true);
+                for (Node pn:hboxCards.getChildren()) {
+                    if (pn instanceof Pane){
+                        Node num = ((Pane) pn).getChildren().get(0);
+                        if (num instanceof Text){
+                            switch (((Text) num).getText()){
+                                case "K":
+                                    ((Text) num).setText(""+k);
+                                    break;
+                                case "B":
+                                    ((Text) num).setText(""+b);
+                                    break;
+                                case "G":
+                                    ((Text) num).setText(""+g);
+                                    break;
+                                case "R":
+                                    ((Text) num).setText(""+r);
+                                    break;
+                            }
+                        }
+                    }
+                }
+                Node nd = hboxCards.getChildren().remove(0);
 
-        for (Node pn:hboxCards.getChildren()) {
-
-        }
-
-        for (Node pn:hboxUI.getChildren()) {
-            if (pn instanceof Pane){
-                Node in = ((Pane) pn).getChildren().get(0);
-                if (in instanceof Text){
-                    if (!((Text) in).getText().equals("")){
-                        Node rdy = ((Pane) pn).getChildren().get(1);
-                        ((Text) rdy).setText("Počet karet: "+(splittedMsg.length-1));
-                        rdy = ((Pane) pn).getChildren().get(1);
-                        ((Text) rdy).setText("HRAJE!");
-                        rdy.setVisible(false);
+                for (Node pn:hboxUI.getChildren()) {
+                    if (pn instanceof Pane){
+                        Node in = ((Pane) pn).getChildren().get(0);
+                        if (in instanceof Text){
+                            if (!((Text) in).getText().equals("")){
+                                Node rdy = ((Pane) pn).getChildren().get(1);
+                                ((Text) rdy).setText("Počet karet: "+(splittedMsg.length-1));
+                                rdy = ((Pane) pn).getChildren().get(1);
+                                ((Text) rdy).setText("HRAJE!");
+                                rdy.setVisible(false);
+                            }
+                        }
                     }
                 }
             }
-        }
+        });
     }
 
     public void writeToConsole(String s) {
