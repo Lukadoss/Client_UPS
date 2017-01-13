@@ -1,9 +1,8 @@
 package Trick.TCPClient;
 
 import Trick.Controller.LoginController;
-import Trick.Controller.ServerLobbyController;
 import Trick.Main;
-import javafx.fxml.FXML;
+import javafx.application.Platform;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -14,77 +13,35 @@ import java.net.Socket;
 
 public class TCP {
     private Socket socket;
-    private InetAddress serverIP;
-    private int serverPort;
 
-    public TCP(InetAddress IP, int Port) {
-        this.serverIP = IP;
-        this.serverPort = Port;
-    }
-
-
-    public boolean connect() {
+    public TCP(InetAddress serverIP, int serverPort) {
         try {
             socket = new Socket(serverIP, serverPort);
-            return true;
         } catch (IOException e) {
             LoginController controller = Main.FXMLLOADER_LOGIN.getController();
             controller.setStatusText("Připojení k serveru " + serverIP + ":" + serverPort + " se nezdařilo", 3000);
-            return false;
         } catch (IllegalArgumentException e) {
             LoginController controller = Main.FXMLLOADER_LOGIN.getController();
             controller.setStatusText("Nesprávné číslo portu: číslo v rozmezí 0 - 65535", 3000);
-            return false;
         } catch (NullPointerException e) {
             LoginController controller = Main.FXMLLOADER_LOGIN.getController();
             controller.setStatusText("Hostitelský server nerozpoznán", 3000);
-            return false;
         }
     }
 
-    public void disconnect() {
-        try {
-            sendMsg(MsgTables.getType(MsgTypes.C_LOGOUT) + "#");
-            socket.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public int loginUser(String name) {
+    public void loginUser(String name) {
         String connString = MsgTables.getType(MsgTypes.C_LOGIN) + ":" + name + "#";
         sendMsg(connString);
-        return 0;
     }
 
-    public void getRoomsTable() {
-        String connString = MsgTables.getType(MsgTypes.C_GET_TABLE) + "#";
+    public void getRoomInfo(){
+        String roomInfo = MsgTables.getType(MsgTypes.C_ROOM_INFO) + "#";
+        sendMsg(roomInfo);
+    }
+
+    public void userReady() {
+        String connString = MsgTables.getType(MsgTypes.C_USR_READY) + "#";
         sendMsg(connString);
-    }
-
-    public void joinRoom(int roomId) {
-        String connString = MsgTables.getType(MsgTypes.C_JOIN_ROOM) + ":" + roomId + "#";
-        sendMsg(connString);
-    }
-
-    public void getRoomUsers(String roomId) {
-        String connString = MsgTables.getType(MsgTypes.C_ROOM_USERS) + ":" + roomId + "#";
-        sendMsg(connString);
-    }
-
-    public void leaveRoom(int roomId) {
-        String connString = MsgTables.getType(MsgTypes.C_LEAVE_ROOM) + ":" + roomId + "#";
-        sendMsg(connString);
-    }
-
-    public void userReady(String roomId, boolean ready) {
-        if (ready) {
-            String connString = MsgTables.getType(MsgTypes.C_USR_READY) + ":" + roomId + "#";
-            sendMsg(connString);
-        } else {
-            String connString = MsgTables.getType(MsgTypes.C_USR_NREADY) + ":" + roomId + "#";
-            sendMsg(connString);
-        }
     }
 
     public void pickedCard(String roomId, int row, int col) {
@@ -98,18 +55,19 @@ public class TCP {
     }
 
     public void sendMsg(String data) {
-        if (Main.FXMLLOADER_SERVERLOBBY!=null) {
-            ServerLobbyController controller = Main.FXMLLOADER_SERVERLOBBY.getController();
-            controller.console.setText(controller.console.getText()+data + "\n");
-        }
-        try {
-            if (socket != null) {
-                DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
-                dataOutputStream.write(data.getBytes());
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    if (socket != null) {
+                        DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
+                        dataOutputStream.write(data.getBytes());
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        });
     }
 
     public String receiveMsg() {
@@ -136,5 +94,9 @@ public class TCP {
             return null;
         }
         return null;
+    }
+
+    public Socket getSocket(){
+        return socket;
     }
 }

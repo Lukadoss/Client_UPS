@@ -1,390 +1,61 @@
 package Trick.Controller;
 
 import Trick.Main;
+import Trick.TCPClient.MsgTables;
 import Trick.TCPClient.TCP;
-import javafx.animation.KeyFrame;
-import javafx.animation.KeyValue;
-import javafx.animation.Timeline;
 import javafx.application.Platform;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.event.EventHandler;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.geometry.Pos;
+import javafx.geometry.Insets;
+import javafx.scene.Group;
 import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.*;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.control.Button;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Line;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
-import javafx.stage.WindowEvent;
-import javafx.util.Duration;
+import javafx.scene.text.TextAlignment;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+/**
+ * Created by seda on 28/10/16.
+ */
 public class GameController implements Initializable {
-    @FXML
-    public GridPane gamePane;
+    private TCP tcpConn;
 
-    //Game, Deck UI
-    @FXML
-    public ImageView i00, i01, i02, i03, i04, i10, i11, i12, i13, i14, i20, i21, i22, i23, i24, i30, i31, i32, i33, i34;
     @FXML
     public Text statusText;
     @FXML
-    public Text turnIndicator;
+    public GridPane serverLobbyPane;
     @FXML
-    public ProgressBar timeIndicator;
-    private static final Image cardBackImg = new Image("/Trick/Public/Img/card-back.png");
-
-    //Joined Users UI
+    public Button ready;
     @FXML
-    private VBox vboxU0, vboxU1, vboxU2, vboxU3;
-
-    public TCP tcpConn;
-    private String thisRoomId;
-    private String newLine = "\n\r";
-
-    private int deckRows = 4, deckCols = 5;
-    private ImageView[][] deck;
-
-    private static final Integer STARTTIME = 30;
-
-    private IntegerProperty timeSeconds = new SimpleIntegerProperty(STARTTIME * 100);
-
-    private Timeline timeline;
+    public Text player, player1, player2, player3, player4, player5, player6, player7, playerr, player1r, player2r, player3r, player4r, player5r, player6r, player7r;
+    @FXML
+    public TextArea console;
+    @FXML
+    public VBox vboxUI;
+    @FXML
+    public HBox hboxUI, hboxCards;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         this.tcpConn = Main.tcpi;
-    }
-
-    public void setThisRoomId(String id) {
-        thisRoomId = id;
-    }
-
-    @FXML
-    public void addNewUserUi(final int userIndex, final String name, final String score, final String isOnTurn) {
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                Text userName = new Text();
-                userName.setText(name.toUpperCase());
-                userName.setFont(Font.font("Verdana", FontWeight.BOLD, 30));
-                Text userScore = new Text();
-                userScore.setText("Skóre: " + score);
-                Text onTurn = new Text();
-                onTurn.setText(isOnTurn);
-                onTurn.setFill(Color.rgb(33, 150, 243, .99));
-                onTurn.setFont(Font.font("Verdana", FontWeight.BOLD, 16));
-
-                VBox vbox = new VBox();
-                switch (userIndex) {
-                    case 0:
-                        vbox = vboxU0;
-                        break;
-                    case 1:
-                        vbox = vboxU1;
-                        break;
-                    case 2:
-                        vbox = vboxU2;
-                        break;
-                    case 3:
-                        vbox = vboxU3;
-                        break;
-                }
-                vbox.getChildren().add(0, userName);
-                vbox.getChildren().add(1, userScore);
-                vbox.getChildren().add(2, onTurn);
-                vbox.setAlignment(Pos.CENTER_RIGHT);
-                vbox.setSpacing(5);
-            }
-        });
-    }
-
-    public void updateOnTurn(final int id) {
-
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                turnIndicator.setText("Čekej na tah protihráče");
-                clearOnTurn();
-                //TODO furt nefunguje sidebar update
-                Node readyNode;
-                switch (id) {
-                    case 0:
-                        readyNode = vboxU0.getChildren().get(2);
-                        break;
-                    case 1:
-                        readyNode = vboxU1.getChildren().get(2);
-                        break;
-                    /*
-                    case 2:
-                        readyNode = vboxU2.getChildren().get(2);
-                        break;
-                    case 3:
-                        readyNode = vboxU3.getChildren().get(2);
-                        break;
-                        */
-                    default:
-                        readyNode = null;
-                }
-                if (readyNode instanceof Text) {
-                    ((Text) readyNode).setText("Na tahu");
-                }
-                //readyNode.getParent().setStyle("-fx-background-color: #EEEEEE;");
-
-                if (Main.clientInfo.getRoomIndex() == id) {
-                    turnIndicator.setText("Jsi na tahu!");
-                    timeIndicator.setVisible(true);
-                    timeIndicator.progressProperty().bind(timeSeconds.divide(STARTTIME * 100.0).subtract(1).multiply(-1));
-                    if (timeline != null) {
-                        timeline.stop();
-                    }
-                    timeSeconds.set((STARTTIME) * 100);
-                    timeline = new Timeline();
-                    timeline.getKeyFrames().add(
-                            new KeyFrame(Duration.seconds(STARTTIME), new KeyValue(timeSeconds, 0)));
-                    timeline.playFromStart();
-                } else {
-                    updateTurnWait();
-                }
-            }
-
-
-        });
-    }
-
-    public void clearOnTurn() {
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                for (int i = 0; i < 2; i++) {
-                    Node readyNode;
-                    switch (i) {
-                        case 0:
-                            readyNode = vboxU0.getChildren().get(2);
-                            break;
-                        case 1:
-                            readyNode = vboxU1.getChildren().get(2);
-                            break;
-                /*
-                case 2:
-                    readyNode = vboxU2.getChildren().get(2);
-                    break;
-                case 3:
-                    readyNode = vboxU3.getChildren().get(2);
-                    break;
-                    */
-                        default:
-                            readyNode = null;
-                    }
-                    if (readyNode instanceof Text) {
-                        ((Text) readyNode).setText("");
-                    }
-                    //readyNode.getParent().setStyle("-fx-background-color: #FAFAFA;");
-                }
-            }
-        });
-    }
-
-    public void updateTurnWait() {
-        turnIndicator.setText("Čekej na tah protihráče");
-        timeIndicator.setVisible(false);
-    }
-
-    public void setServerLobbyScene() throws IOException {
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Stage gameStage = (Stage) gamePane.getScene().getWindow();
-                    gameStage.close();
-
-                    FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/Trick/Stage/ServerLobby.fxml"));
-                    Parent serverLobbyRoot = fxmlLoader.load();
-                    Stage serverLobbyStage = new Stage();
-                    serverLobbyStage.setScene(new Scene(serverLobbyRoot, 1024, 768));
-                    serverLobbyStage.setTitle("Čupr Trick - Server Lobby");
-                    serverLobbyStage.getIcons().add(new Image("Trick/Public/Img/icon.png"));
-                    serverLobbyStage.setResizable(false);
-                    serverLobbyStage.show();
-                    Main.FXMLLOADER_SERVERLOBBY = fxmlLoader;
-                    Main.parentWindow = serverLobbyStage;
-
-                    ServerLobbyController s = Main.FXMLLOADER_SERVERLOBBY.getController();
-                    s.refreshTable();
-
-                    serverLobbyStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-                        @Override
-                        public void handle(WindowEvent event) {
-                            Main.tcpi.disconnect();
-                            System.exit(0);
-                        }
-                    });
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-    }
-
-    public void setCardDeck() {
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                deck = new ImageView[][]{{i00, i01, i02, i03, i04}, {i10, i11, i12, i13, i14}, {i20, i21, i22, i23, i24}, {i30, i31, i32, i33, i34}};
-                for (int i = 0; i < deckRows; i++) {
-                    for (int j = 0; j < deckCols; j++) {
-                        deck[i][j].setImage(cardBackImg);
-                        final int row = i;
-                        final int col = j;
-                        deck[i][j].setOnMouseClicked(new EventHandler<MouseEvent>() {
-
-                            @Override
-                            public void handle(MouseEvent arg0) {
-                                onCardClicked(row, col);
-                            }
-                        });
-                    }
-                }
-
-            }
-        });
-    }
-
-    public void onCardClicked(int row, int col) {
-        tcpConn.pickedCard(thisRoomId, row, col);
-    }
-
-    public void flipCard(int row, int col, int imgId) {
-        Image flippedCard = new Image("/Trick/Public/Img/cards/" + imgId + ".png");
-        deck[row][col].setImage(flippedCard);
-    }
-
-    public void flipBack(int firstRow, int firstCol, int secRow, int secCol) {
-        deck[firstRow][firstCol].setImage(cardBackImg);
-        deck[secRow][secCol].setImage(cardBackImg);
-        tcpConn.turnAck(thisRoomId);
-    }
-
-    public void playerScored(int id, int score, int firstRow, int firstCol, int secRow, int secCol) {
-        updateScore(id, score);
-        removeCard(firstRow, firstCol);
-        removeCard(secRow, secCol);
-        if(id == Main.clientInfo.getRoomIndex()){
-            updateOnTurn(id);
-        }
-    }
-
-    public void updateScore(int id, int score) {
-        Node readyNode;
-        switch (id) {
-            case 0:
-                readyNode = vboxU0.getChildren().get(1);
-                break;
-            case 1:
-                readyNode = vboxU1.getChildren().get(1);
-                break;
-            case 2:
-                readyNode = vboxU2.getChildren().get(1);
-                break;
-            case 3:
-                readyNode = vboxU3.getChildren().get(1);
-                break;
-            default:
-                readyNode = null;
-        }
-        if (readyNode instanceof Text) {
-            ((Text) readyNode).setText("Skóre: " + score);
-        }
-    }
-
-    public void removeCard(int row, int col) {
-        deck[row][col].setDisable(true);
-        deck[row][col].setVisible(false);
-    }
-
-    public void gameEnd(final int firstId, final int secondId, final int score) {
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-                alert.setTitle("Konec hry");
-                alert.initStyle(StageStyle.UTILITY);
-                alert.setHeaderText(null);
-                alert.setGraphic(null);
-                if (secondId != 0) {
-                    alert.setContentText("Konec hry! Remíza mezi hráči " + getUserName(firstId) + " a " + getUserName(secondId) + " s konečným skóre " + score + ".");
-                } else {
-                    alert.setContentText("Konec hry! Vítězí hráč " + getUserName(firstId) + " s konečným skóre " + score + ".");
-                }
-                ButtonType buttonConf = new ButtonType("ZPĚT DO LOBBY");
-
-                alert.getButtonTypes().setAll(buttonConf);
-                DialogPane dialogPane = alert.getDialogPane();
-                dialogPane.getStylesheets().add(
-                        getClass().getResource("/Trick/Public/Styles/material.css").toExternalForm());
-                dialogPane.getStyleClass().add("game-end");
-
-                alert.showAndWait();
-                if (alert.getResult() == buttonConf) {
-                    quitRoom();
-                } else {
-                    quitRoom();
-                }
-            }
-        });
-    }
-
-    public String getUserName(int id) {
-        Node readyNode;
-        switch (id) {
-            case 0:
-                readyNode = vboxU0.getChildren().get(0);
-                break;
-            case 1:
-                readyNode = vboxU1.getChildren().get(0);
-                break;
-            /*
-            case 2:
-                readyNode = vboxU2.getChildren().get(0);
-                break;
-            case 3:
-                readyNode = vboxU3.getChildren().get(0);
-                break;
-                */
-            default:
-                readyNode = null;
-        }
-        if (readyNode instanceof Text) {
-            return ((Text) readyNode).getText();
-        } else return "";
-    }
-
-    public void quitRoom() {
-        try {
-            GameLobbyController g = Main.FXMLLOADER_GAMELOBBY.getController();
-            g.leaveLobby();
-            setServerLobbyScene();
-        } catch (IOException e) {
-
-        }
+        tcpConn.getRoomInfo();
+        player.setText(Main.userName);
     }
 
     public void setStatusText(final String text, final boolean err) {
@@ -400,7 +71,7 @@ public class GameController implements Initializable {
                 Thread timedText = new Thread() {
                     public void run() {
                         try {
-                            Thread.sleep(5000);
+                            Thread.sleep(3000);
                             statusText.setText("");
                         } catch (InterruptedException e) {
                         }
@@ -410,5 +81,213 @@ public class GameController implements Initializable {
             }
         });
 
+    }
+
+    @FXML
+    public void addNewUser(final int userIndex, final String name, final int ready) {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                for (Node pn:hboxUI.getChildren()) {
+                    if (pn instanceof Pane){
+                        Node in = ((Pane) pn).getChildren().get(0);
+                        if (in instanceof Text){
+                            if (((Text) in).getText().equals("")){
+                                Node rdy = ((Pane) pn).getChildren().get(0);
+                                ((Text) rdy).setText(name);
+
+                                rdy = ((Pane) pn).getChildren().get(2);
+                                ((Text) rdy).setText("Nepřipraven");
+                                ((Text) rdy).setFill(Color.RED);
+                                break;
+                            }
+                        }
+                    }
+                }
+//                Text userName = new Text();
+//                userName.setText(name);
+//                userName.setFont(Font.font("Verdana", FontWeight.SEMI_BOLD, 25));
+//                userName.setLayoutY(60);
+//                userName.setTextAlignment(TextAlignment.CENTER);
+//                userName.setWrappingWidth(116);
+//
+//                Text userReady = new Text();
+//                if(ready!=1) {
+//                    userReady.setText("Nepřipraven");
+//                    userReady.setFill(Color.RED);
+//                }
+//                else {
+//                    userReady.setText("Připraven");
+//                    userReady.setFill(Color.GREEN);
+//                }
+//                userReady.setFont(Font.font("Verdana", FontWeight.NORMAL, 12));
+//                userReady.setLayoutY(125);
+//                userReady.setTextAlignment(TextAlignment.CENTER);
+//                userReady.setWrappingWidth(116);
+//
+//                Text cardNum = new Text();
+//                cardNum.setFont(Font.font("Verdana", FontWeight.NORMAL, 12));
+//                cardNum.setLayoutY(100);
+//                cardNum.setWrappingWidth(116);
+//                cardNum.setTextAlignment(TextAlignment.CENTER);
+//                cardNum.setText("Počet karet:");
+//
+//                Line line = new Line();
+//                line.setLayoutX(116);
+//                line.setStartY(163);
+//
+//                Pane pane = new Pane();
+//                pane.getChildren().add(0, userName);
+//                pane.getChildren().add(1, cardNum);
+//                pane.getChildren().add(2, userReady);
+//                pane.getChildren().add(3, line);
+//                pane.setPrefHeight(156);
+//                pane.setPrefWidth(116);
+//                hboxUI.getChildren().add(userIndex, pane);
+            }
+        });
+    }
+
+    @FXML
+    public void removeUser(String name) {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                int x=0;
+                for (Node pn:hboxUI.getChildren()) {
+                    if (pn instanceof Pane){
+                        Node in = ((Pane) pn).getChildren().get(0);
+                        if (in instanceof Text){
+                            if (((Text) in).getText().equals(name)){
+                                Node rdy = ((Pane) pn).getChildren().get(0);
+                                ((Text) rdy).setText("");
+                                rdy = ((Pane) pn).getChildren().get(1);
+                                ((Text) rdy).setText("");
+                                rdy = ((Pane) pn).getChildren().get(2);
+                                ((Text) rdy).setText("");
+                                break;
+                            }
+                            x++;
+                        }
+                    }
+                }
+//TODO:Nejde to spravne
+//                for (int i = x; i<hboxUI.getChildren().size();i++){
+//                    Node pn = hboxUI.getChildren().get(i);
+//                    if (pn instanceof Pane){
+//                        Node in = ((Pane) pn).getChildren().get(0);
+//                        if (in instanceof Text) {
+//                            if (!(((Text) in).getText().equals(""))) {
+//                                Node pr = hboxUI.getChildren().get(x);
+//                                if (pr instanceof Pane) {
+//                                    Node rdy = ((Pane) pr).getChildren().get(0);
+//                                    ((Text) rdy).setText(((Text)((Pane) pn).getChildren().get(0)).getText());
+//                                    ((Text)((Pane) pn).getChildren().get(0)).setText("");
+//
+//                                    rdy = ((Pane) pr).getChildren().get(1);
+//                                    ((Text) rdy).setText(((Text)((Pane) pn).getChildren().get(1)).getText());
+//                                    ((Text)((Pane) pn).getChildren().get(1)).setText("");
+//
+//                                    rdy = ((Pane) pr).getChildren().get(2);
+//                                    ((Text) rdy).setText(((Text)((Pane) pn).getChildren().get(2)).getText());
+//                                    ((Text)((Pane) pn).getChildren().get(2)).setText("");
+//                                }
+//                            }
+//                        }
+//                    }
+//                }
+
+            }
+        });
+    }
+
+    public void updateUserReady(String name) {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                for (Node pn:hboxUI.getChildren()) {
+                    if (pn instanceof Pane){
+                        Node in = ((Pane) pn).getChildren().get(0);
+                        if (in instanceof Text){
+                            if (((Text) in).getText().equals(name)){
+                                Node rdy = ((Pane) pn).getChildren().get(2);
+                                if (rdy instanceof Text){
+                                    ((Text) rdy).setText("Připraven");
+                                    ((Text) rdy).setFill(Color.GREEN);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    public void setUserReady(){
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                tcpConn.userReady();
+                ready.setDisable(true);
+            }
+        });
+    }
+
+    public void setReady() {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                playerr.setText("Připraven");
+                playerr.setFill(Color.GREEN);
+            }
+        });
+    }
+
+    public void readyTable(String[] splittedMsg) {
+        int r=0, g=0, b=0, k=0;
+        for (int i=1;i<splittedMsg.length;i++){
+            switch (splittedMsg[i]){
+                case "K":
+                    k++;
+                    break;
+                case "B":
+                    b++;
+                    break;
+                case "G":
+                    g++;
+                    break;
+                case "R":
+                    r++;
+                    break;
+            }
+        }
+
+        for (Node pn:hboxCards.getChildren()) {
+
+        }
+
+        for (Node pn:hboxUI.getChildren()) {
+            if (pn instanceof Pane){
+                Node in = ((Pane) pn).getChildren().get(0);
+                if (in instanceof Text){
+                    if (!((Text) in).getText().equals("")){
+                        Node rdy = ((Pane) pn).getChildren().get(1);
+                        ((Text) rdy).setText("Počet karet: "+(splittedMsg.length-1));
+                        rdy = ((Pane) pn).getChildren().get(1);
+                        ((Text) rdy).setText("HRAJE!");
+                        rdy.setVisible(false);
+                    }
+                }
+            }
+        }
+    }
+
+    public void writeToConsole(String s) {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                console.setText(console.getText()+s+"\n");
+            }
+        });
     }
 }

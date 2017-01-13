@@ -1,8 +1,8 @@
 package Trick;
 
-import Trick.TCPClient.ClientInfo;
 import Trick.TCPClient.TCP;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -12,11 +12,8 @@ public class Main extends Application {
 
     public static FXMLLoader FXMLLOADER_LOGIN;
     public static FXMLLoader FXMLLOADER_SERVERLOBBY;
-    public static FXMLLoader FXMLLOADER_GAMELOBBY;
-    public static FXMLLoader FXMLLOADER_GAME;
     public static TCP tcpi;
-    public static ClientInfo clientInfo;
-
+    public static String userName;
     public static Stage parentWindow;
 
     @Override
@@ -27,6 +24,10 @@ public class Main extends Application {
         loginStage.setScene(new Scene(root, 350, 270));
         loginStage.setResizable(false);
         loginStage.show();
+        loginStage.setOnCloseRequest(windowEvent -> {
+            System.exit(0);
+            Platform.exit();
+        });
         FXMLLOADER_LOGIN = fxmlLoader;
     }
 

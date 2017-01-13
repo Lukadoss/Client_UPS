@@ -1,23 +1,15 @@
 package Trick.TCPClient;
 
-import Trick.Controller.GameController;
-import Trick.Controller.GameLobbyController;
 import Trick.Controller.LoginController;
-import Trick.Controller.ServerLobbyController;
+import Trick.Controller.GameController;
 import Trick.Main;
-import Trick.TCPClient.ClientInfo;
-import Trick.TCPClient.MsgTables;
-import Trick.TCPClient.MsgTypes;
-import Trick.TCPClient.TCP;
+import javafx.application.Platform;
 
 import java.io.IOException;
 
 public class ClientListener implements Runnable {
     private TCP tcpInfo;
-    //private DataInputStream dataInputStream;
     private LoginController loginController;
-    private ServerLobbyController serverLobbyController;
-    private GameLobbyController gameLobbyController;
     private GameController gameController;
     private boolean ClientListenerRunning = true;
 
@@ -25,14 +17,17 @@ public class ClientListener implements Runnable {
         this.tcpInfo = tcpInfo;
         Main.tcpi = tcpInfo;
         loginController = Main.FXMLLOADER_LOGIN.getController();
-        //gameController = Main.FXMLLOADER_GAME.getController();
     }
 
     @Override
     public void run() {
         if (!ClientListenerRunning) {
             if (tcpInfo != null) {
-                tcpInfo.disconnect();
+                try {
+                    tcpInfo.getSocket().close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
         while (ClientListenerRunning) {
@@ -48,7 +43,11 @@ public class ClientListener implements Runnable {
                     ClientListenerRunning = false;
                 }
             } catch (Exception ex) {
-                tcpInfo.disconnect();
+                try {
+                    tcpInfo.getSocket().close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 ex.printStackTrace();
                 //TODO
             }
@@ -60,9 +59,14 @@ public class ClientListener implements Runnable {
         String[] splittedMsg = message.split(":");
 
         switch (splittedMsg[0]) {
+            case "S_NICK_LEN":
+                loginController.setStatusText("Zadejte jméno v rozmezí 3-15 znaků", 3000);
+                loginController.resetTCP();
+                ClientListenerRunning = false;
+                break;
             case "S_LOGGED":
                 loginController.setLobbyUi();
-                Main.clientInfo = new ClientInfo(splittedMsg[1], -1);
+                Main.userName = splittedMsg[1];
                 break;
             case "S_NAME_EXISTS":
                 loginController.setStatusText("Uživatel se jménem " + splittedMsg[1] + " již existuje", 3000);
@@ -70,36 +74,42 @@ public class ClientListener implements Runnable {
             case "S_SERVER_FULL":
                 loginController.setStatusText("Server je plný", 3000);
                 break;
-            case "S_USR_TBL":
+            case "S_JOIN_ERR":
+                gameController.setStatusText("Připojení k místnosti " + splittedMsg[1] + " se nezdařilo", true);
                 break;
             case "S_ROOM_INFO":
-                serverLobbyController = Main.FXMLLOADER_SERVERLOBBY.getController();
-                serverLobbyController.updateTableRow(splittedMsg[1], splittedMsg[2], splittedMsg[3], splittedMsg[4], splittedMsg[5]);
-                String connString = MsgTables.getType(MsgTypes.C_ROW_UPDATE) + ":" + splittedMsg[1] + "#";
-                tcpInfo.sendMsg(connString);
+                gameController.addNewUser(Integer.parseInt(splittedMsg[1]), splittedMsg[2], Integer.parseInt(splittedMsg[3]));
                 break;
             case "S_USR_JOINED":
-                    serverLobbyController = Main.FXMLLOADER_SERVERLOBBY.getController();
-                    Main.clientInfo.setActiveRoom(Integer.parseInt(splittedMsg[1]));
+//                gameController.console.setText(gameController.console.getText()+"Nový hráč: \""+splittedMsg[2]+"\"\n");
+                gameController.addNewUser(Integer.parseInt(splittedMsg[1])-1, splittedMsg[2], 0);
                 break;
-            case "S_JOIN_ERR":
-                serverLobbyController = Main.FXMLLOADER_SERVERLOBBY.getController();
-                serverLobbyController.setStatusText("Připojení k místnosti " + splittedMsg[1] + " se nezdařilo", true);
+            case "S_USR_LEFT":
+                gameController.removeUser(splittedMsg[1]);
                 break;
             case "S_USR_READY":
-                gameLobbyController = Main.FXMLLOADER_GAMELOBBY.getController();
-                gameLobbyController.updateUserReadyUi(Integer.parseInt(splittedMsg[2]), true);
-                if (splittedMsg[1].equals("1")) {
-                    gameLobbyController.setReadyBtn();
-                }
+//                gameController.console.setText(gameController.console.getText()+"Hráč: "+splittedMsg[1]+" je připraven\n");
+                gameController.updateUserReady(splittedMsg[1]);
                 break;
-            case "S_USR_NREADY":
-                gameLobbyController = Main.FXMLLOADER_GAMELOBBY.getController();
-                gameLobbyController.updateUserReadyUi(Integer.parseInt(splittedMsg[2]), false);
-                if (splittedMsg[1].equals("1")) {
-                    gameLobbyController.unsetReadyBtn();
-                }
+            case "S_USR_READY_ACK":
+//                gameController.console.setText(gameController.console.getText()+"Jsi připraven!\n");
+                gameController.setReady();
                 break;
+            case "S_CONSOLE_INFO":
+                gameController.writeToConsole(splittedMsg[1]);
+                break;
+            case "S_ROOM_READY":
+                break;
+            case "S_CARDS_OWNED":
+                gameController.readyTable(splittedMsg);
+                break;
+//            case "S_USR_NREADY":
+//                gameLobbyController = Main.FXMLLOADER_GAMELOBBY.getController();
+//                gameLobbyController.updateUserReadyUi(Integer.parseInt(splittedMsg[2]), false);
+//                if (splittedMsg[1].equals("1")) {
+//                    gameLobbyController.unsetReadyBtn();
+//                }
+//                break;
 //            case "S_ROOM_READY":
 //                try {
 //                    Main.clientInfo.setRoomIndex(Integer.parseInt(splittedMsg[2]));
@@ -124,57 +134,43 @@ public class ClientListener implements Runnable {
 //                    gameController = Main.FXMLLOADER_GAME.getController();
 //                    gameController.appendSrvrMsg(gameController.getUserName(Integer.parseInt(splittedMsg[1])) + ", jsi na tahu. Zbývá ti 10 vteřin.");
 //                    break;
-            case "S_ROOM_USER_INFO":
-                gameLobbyController = Main.FXMLLOADER_GAMELOBBY.getController();
-                gameLobbyController.addNewUserUi(Integer.parseInt(splittedMsg[1]), splittedMsg[2], Integer.parseInt(splittedMsg[3]), "0");
-                String connString2 = MsgTables.getType(MsgTypes.C_USER_UPDATE) + ":" + splittedMsg[1] + "#";
-                tcpInfo.sendMsg(connString2);
-                break;
-//            case "S_ROOM_UPDATE":
-//                gameLobbyController = Main.FXMLLOADER_GAMELOBBY.getController();
-//                gameLobbyController.updateRoomUi(splittedMsg[1], splittedMsg[2]);
-//                if (splittedMsg[3].equals("1")) {
-//                    gameLobbyController.addNewUserUi(Integer.parseInt(splittedMsg[4]), splittedMsg[5], 0, "0");
-//                    gameLobbyController.appendSrvrMsg("Hráč " + splittedMsg[5] + " se připojil.");
-//                }
-//                if (splittedMsg[3].equals("0")) {
-//                    gameLobbyController.removeUserUi(Integer.parseInt(splittedMsg[4]));
-//                    gameLobbyController.appendSrvrMsg("Hráč " + splittedMsg[5] + " odešel z místnosti.");
+//            case "S_TURNED":
+//                gameController = Main.FXMLLOADER_GAME.getController();
+//                gameController.flipCard(Integer.parseInt(splittedMsg[1]), Integer.parseInt(splittedMsg[2]), Integer.parseInt(splittedMsg[3]));
+//                break;
+//            case "S_ON_TURN":
+//                gameController = Main.FXMLLOADER_GAME.getController();
+//                gameController.updateOnTurn(Integer.parseInt(splittedMsg[1]));
+//                break;
+//            case "S_NON_TURN":
+//                gameController = Main.FXMLLOADER_GAME.getController();
+//                gameController.setStatusText("Nejsi na tahu! počkej až protihráč dokončí svůj tah.", false);
+//                break;
+//            case "S_TIME":
+//                gameController = Main.FXMLLOADER_GAME.getController();
+//                gameController.updateTurnWait();
+//                break;
+//            case "S_SCORED":
+//                gameController = Main.FXMLLOADER_GAME.getController();
+//                gameController.playerScored(Integer.parseInt(splittedMsg[1]), Integer.parseInt(splittedMsg[2]), Integer.parseInt(splittedMsg[3]), Integer.parseInt(splittedMsg[4]), Integer.parseInt(splittedMsg[5]), Integer.parseInt(splittedMsg[6]));
+//                break;
+//            case "S_TURNBACK":
+//                gameController = Main.FXMLLOADER_GAME.getController();
+//                gameController.flipBack(Integer.parseInt(splittedMsg[1]), Integer.parseInt(splittedMsg[2]), Integer.parseInt(splittedMsg[3]), Integer.parseInt(splittedMsg[4]));
+//                break;
+//            case "S_GAME_END":
+//                gameController = Main.FXMLLOADER_GAME.getController();
+//                if (splittedMsg[1].equals("0")) {
+//                    gameController.gameEnd(Integer.parseInt(splittedMsg[2]), Integer.parseInt(splittedMsg[3]), Integer.parseInt(splittedMsg[4]));
+//                } else {
+//                    gameController.gameEnd(Integer.parseInt(splittedMsg[2]), 0, Integer.parseInt(splittedMsg[3]));
 //                }
 //                break;
-            case "S_TURNED":
-                gameController = Main.FXMLLOADER_GAME.getController();
-                gameController.flipCard(Integer.parseInt(splittedMsg[1]), Integer.parseInt(splittedMsg[2]), Integer.parseInt(splittedMsg[3]));
-                break;
-            case "S_ON_TURN":
-                gameController = Main.FXMLLOADER_GAME.getController();
-                gameController.updateOnTurn(Integer.parseInt(splittedMsg[1]));
-                break;
-            case "S_NON_TURN":
-                gameController = Main.FXMLLOADER_GAME.getController();
-                gameController.setStatusText("Nejsi na tahu! počkej až protihráč dokončí svůj tah.", false);
-                break;
-            case "S_TIME":
-                gameController = Main.FXMLLOADER_GAME.getController();
-                gameController.updateTurnWait();
-                break;
-            case "S_SCORED":
-                gameController = Main.FXMLLOADER_GAME.getController();
-                gameController.playerScored(Integer.parseInt(splittedMsg[1]), Integer.parseInt(splittedMsg[2]), Integer.parseInt(splittedMsg[3]), Integer.parseInt(splittedMsg[4]), Integer.parseInt(splittedMsg[5]), Integer.parseInt(splittedMsg[6]));
-                break;
-            case "S_TURNBACK":
-                gameController = Main.FXMLLOADER_GAME.getController();
-                gameController.flipBack(Integer.parseInt(splittedMsg[1]), Integer.parseInt(splittedMsg[2]), Integer.parseInt(splittedMsg[3]), Integer.parseInt(splittedMsg[4]));
-                break;
-            case "S_GAME_END":
-                gameController = Main.FXMLLOADER_GAME.getController();
-                if (splittedMsg[1].equals("0")) {
-                    gameController.gameEnd(Integer.parseInt(splittedMsg[2]), Integer.parseInt(splittedMsg[3]), Integer.parseInt(splittedMsg[4]));
-                } else {
-                    gameController.gameEnd(Integer.parseInt(splittedMsg[2]), 0, Integer.parseInt(splittedMsg[3]));
-                }
-                break;
         }
+    }
+
+    public void setGameController(GameController gameController) {
+        this.gameController = gameController;
     }
 }
 

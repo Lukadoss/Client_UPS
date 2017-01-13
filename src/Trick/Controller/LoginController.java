@@ -4,7 +4,6 @@ import Trick.Main;
 import Trick.TCPClient.TCP;
 import Trick.TCPClient.ClientListener;
 import javafx.application.Platform;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
@@ -12,14 +11,13 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 
+import java.io.IOException;
 import java.net.InetAddress;
 
 import static java.lang.Thread.sleep;
@@ -40,6 +38,7 @@ public class LoginController {
     public Text statusText;
 
     private TCP tcp;
+    private ClientListener clientListener;
 
     public void attemptLogin() {
         statusText.setText("");
@@ -47,8 +46,9 @@ public class LoginController {
             InetAddress inetAddress = InetAddress.getByName(ipField.getText());
             int port = Integer.parseInt(portField.getText());
             tcp = new TCP(inetAddress, port);
-            if (tcp.connect()) {
-                ClientListener clientListener = new ClientListener(tcp);
+
+            if (tcp.getSocket() != null) {
+                clientListener = new ClientListener(tcp);
                 Thread thread = new Thread(clientListener);
                 thread.start();
                 sleep(100);
@@ -64,31 +64,24 @@ public class LoginController {
             @Override
             public void run() {
                 try {
-                    Stage loginStage = (Stage) loginPane.getScene().getWindow();
-                    loginStage.close();
+                    ((Stage) loginPane.getScene().getWindow()).close();
 
-                    FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/Trick/Stage/ServerLobby.fxml"));
+                    FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/Trick/Stage/Game.fxml"));
                     Parent serverLobbyRoot = fxmlLoader.load();
                     final Stage serverLobbyStage = new Stage();
                     serverLobbyStage.setScene(new Scene(serverLobbyRoot, 1024, 768));
-                    serverLobbyStage.setTitle("Trick - Lobby");
+                    serverLobbyStage.setTitle("Trick - Herní lobby");
                     serverLobbyStage.setResizable(false);
                     serverLobbyStage.show();
+                    serverLobbyStage.setOnCloseRequest(windowEvent -> {
+                        System.exit(0);
+                        Platform.exit();
+                    });
                     Main.parentWindow = serverLobbyStage;
                     Main.FXMLLOADER_SERVERLOBBY = fxmlLoader;
-
-                    ServerLobbyController s = Main.FXMLLOADER_SERVERLOBBY.getController();
-                    s.refreshTable();
+                    GameController s = Main.FXMLLOADER_SERVERLOBBY.getController();
+                    clientListener.setGameController(s);
                     s.setStatusText("Přihlášen na server", false);
-
-                    serverLobbyStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-                        @Override
-                        public void handle(WindowEvent event) {
-                            tcp.disconnect();
-                            System.exit(0);
-
-                        }
-                    });
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -105,22 +98,20 @@ public class LoginController {
 
                     FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/Trick/Stage/Login.fxml"));
                     Parent root = fxmlLoader.load();
-                    Stage loginStage = new Stage();
+                    final Stage loginStage = new Stage();
                     loginStage.setTitle("Login");
                     loginStage.setScene(new Scene(root, 350, 270));
                     loginStage.setResizable(false);
                     loginStage.show();
+                    loginStage.setOnCloseRequest(windowEvent -> {
+                        System.exit(0);
+                        Platform.exit();
+                    });
                     Main.FXMLLOADER_LOGIN = fxmlLoader;
 
                     LoginController l = Main.FXMLLOADER_LOGIN.getController();
                     l.setStatusText("Spojení se serverem bylo přerušeno", 8000);
 
-                    loginStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-                        @Override
-                        public void handle(WindowEvent event) {
-                            System.exit(0);
-                        }
-                    });
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -140,7 +131,7 @@ public class LoginController {
                         try {
                             Thread.sleep(duration);
                             statusText.setText("");
-                        } catch (InterruptedException e) {
+                        } catch (InterruptedException ignored) {
                         }
                     }
                 };
@@ -149,5 +140,14 @@ public class LoginController {
         });
     }
 
-
+    public void resetTCP() {
+        if(tcp.getSocket()!=null) {
+            try {
+                tcp.getSocket().close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        tcp = null;
+    }
 }

@@ -1,11 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.net.URL?>
-<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.control.TextArea?>
-<?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ToolBar?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -15,76 +11,109 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<GridPane fx:id="gamePane" alignment="center" hgap="10" vgap="10" xmlns="http://javafx.com/javafx/8.0.112-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Trick.Controller.GameController">
+<GridPane fx:id="serverLobbyPane" alignment="center" hgap="10" vgap="10" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Trick.Controller.GameController">
     <children>
         <Pane prefHeight="768.0" prefWidth="1024.0">
             <children>
                 <ToolBar layoutY="740.0" prefHeight="25.0" prefWidth="1024.0">
                     <items>
-                        <Text fx:id="statusText" strokeType="OUTSIDE" strokeWidth="0.0" />
+                        <Text fx:id="statusText" strokeType="OUTSIDE" strokeWidth="0.0" text="Status" />
                         <Pane HBox.hgrow="ALWAYS" />
                     </items>
                 </ToolBar>
-                <AnchorPane layoutY="0.0" prefHeight="734.0" prefWidth="1024.0">
+                <AnchorPane prefHeight="735.0" prefWidth="1024.0">
                     <children>
-                        <Pane layoutY="0.0" prefHeight="585.0" prefWidth="730.0" styleClass="deck">
-                            <children>
-                                <ImageView fx:id="i00" fitHeight="140.0" fitWidth="140.0" layoutX="5.0" layoutY="5.0" />
-                                <ImageView fx:id="i01" fitHeight="140.0" fitWidth="140.0" layoutX="150.0" layoutY="5.0" pickOnBounds="true" preserveRatio="true" />
-                                <ImageView fx:id="i02" fitHeight="140.0" fitWidth="140.0" layoutX="295.0" layoutY="5.0" pickOnBounds="true" preserveRatio="true" />
-                                <ImageView fx:id="i03" fitHeight="140.0" fitWidth="140.0" layoutX="440.0" layoutY="5.0" pickOnBounds="true" preserveRatio="true" />
-                                <ImageView fx:id="i04" fitHeight="140.0" fitWidth="140.0" layoutX="585.0" layoutY="5.0" pickOnBounds="true" preserveRatio="true" />
-                                <ImageView fx:id="i10" fitHeight="140.0" fitWidth="140.0" layoutX="5.0" layoutY="150.0" pickOnBounds="true" preserveRatio="true" />
-                                <ImageView fx:id="i11" fitHeight="140.0" fitWidth="140.0" layoutX="150.0" layoutY="150.0" pickOnBounds="true" preserveRatio="true" />
-                                <ImageView fx:id="i12" fitHeight="140.0" fitWidth="140.0" layoutX="295.0" layoutY="150.0" pickOnBounds="true" preserveRatio="true" />
-                                <ImageView fx:id="i13" fitHeight="140.0" fitWidth="140.0" layoutX="440.0" layoutY="150.0" pickOnBounds="true" preserveRatio="true" />
-                                <ImageView fx:id="i14" fitHeight="140.0" fitWidth="140.0" layoutX="585.0" layoutY="150.0" pickOnBounds="true" preserveRatio="true" />
-                                <ImageView fx:id="i20" fitHeight="140.0" fitWidth="140.0" layoutX="5.0" layoutY="295.0" pickOnBounds="true" preserveRatio="true" />
-                                <ImageView fx:id="i21" fitHeight="140.0" fitWidth="140.0" layoutX="150.0" layoutY="295.0" pickOnBounds="true" preserveRatio="true" />
-                                <ImageView fx:id="i22" fitHeight="140.0" fitWidth="140.0" layoutX="295.0" layoutY="295.0" pickOnBounds="true" preserveRatio="true" />
-                                <ImageView fx:id="i23" fitHeight="140.0" fitWidth="140.0" layoutX="440.0" layoutY="295.0" pickOnBounds="true" preserveRatio="true" />
-                                <ImageView fx:id="i24" fitHeight="140.0" fitWidth="140.0" layoutX="585.0" layoutY="295.0" pickOnBounds="true" preserveRatio="true" />
-                                <ImageView fx:id="i30" fitHeight="140.0" fitWidth="140.0" layoutX="5.0" layoutY="440.0" pickOnBounds="true" preserveRatio="true" />
-                                <ImageView fx:id="i31" fitHeight="140.0" fitWidth="140.0" layoutX="150.0" layoutY="440.0" pickOnBounds="true" preserveRatio="true" />
-                                <ImageView fx:id="i32" fitHeight="140.0" fitWidth="140.0" layoutX="295.0" layoutY="440.0" pickOnBounds="true" preserveRatio="true" />
-                                <ImageView fx:id="i33" fitHeight="140.0" fitWidth="140.0" layoutX="440.0" layoutY="440.0" pickOnBounds="true" preserveRatio="true" />
-                                <ImageView fx:id="i34" fitHeight="140.0" fitWidth="140.0" layoutX="585.0" layoutY="440.0" pickOnBounds="true" preserveRatio="true" />
-                            </children>
-                            <opaqueInsets>
-                                <Insets />
-                            </opaqueInsets>
-                        </Pane>
-                        <Pane layoutX="741.0" layoutY="510.0">
-                            <children>
-                                <TextField fx:id="chatMsg" layoutY="188.0" prefHeight="32.0" prefWidth="195.0" promptText="Napiš zprávu" />
-                                <TextArea fx:id="chatWindow" prefHeight="188.0" prefWidth="269.0" wrapText="true" />
-                                <Button fx:id="sendChatMsg" layoutX="201.0" layoutY="188.0" mnemonicParsing="false" onAction="#sendNewMsg" styleClass="button-flat" text="Odeslat" />
-                            </children>
-                        </Pane>
-                        <VBox layoutX="741.0" layoutY="14.0" prefHeight="480.0" prefWidth="269.0">
-                            <children>
-                                <VBox fx:id="vboxU0" prefHeight="120.0" prefWidth="269.0" />
-                                <VBox fx:id="vboxU1" prefHeight="120.0" prefWidth="269.0" />
-                                <VBox fx:id="vboxU2" prefHeight="120.0" prefWidth="269.0" />
-                                <VBox fx:id="vboxU3" prefHeight="120.0" prefWidth="269.0" />
-                            </children>
-                        </VBox>
-                        <Button layoutX="14.0" layoutY="664.0" mnemonicParsing="false" onAction="#quitRoom" prefHeight="56.0" prefWidth="177.0" styleClass="button-raised, btn-big" text="ODEJÍT">
+                        <Text layoutX="443.0" layoutY="38.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Herní lobby">
                             <font>
-                                <Font size="20.0" />
-                            </font>
-                        </Button>
-                        <Text fx:id="turnIndicator" layoutX="14.0" layoutY="639.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Čekej na tah protihráče">
-                            <font>
-                                <Font size="20.0" />
+                                <Font size="24.0" />
                             </font>
                         </Text>
-                        <ProgressBar fx:id="timeIndicator" layoutY="585.0" prefHeight="5.0" prefWidth="730.0" progress="0" visible="true" />
                     </children>
                 </AnchorPane>
+            <VBox fx:id="vboxUI" layoutX="24.0" layoutY="57.0" prefHeight="682.0" prefWidth="977.0">
+               <children>
+                  <HBox fx:id="hboxUI" maxWidth="-Infinity" prefHeight="163.0" prefWidth="700.0">
+                     <children>
+                        <Pane prefHeight="156.0" prefWidth="116.0">
+                           <children>
+                              <Text layoutY="58.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="116.0" />
+                              <Text layoutY="87.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="116.0" />
+                              <Text layoutY="120.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="116.0" />
+                              <Line endY="156.0" layoutX="116.0" />
+                              <Line endY="156.0" />
+                           </children>
+                        </Pane>
+                        <Pane layoutX="10.0" layoutY="10.0" prefHeight="156.0" prefWidth="116.0">
+                           <children>
+                              <Text layoutY="58.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="116.0" />
+                              <Text layoutY="87.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="116.0" />
+                              <Text layoutY="120.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="116.0" />
+                              <Line endY="156.0" layoutX="116.0" />
+                           </children>
+                        </Pane>
+                        <Pane layoutX="126.0" layoutY="10.0" prefHeight="156.0" prefWidth="116.0">
+                           <children>
+                              <Text layoutY="58.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="116.0" />
+                              <Text layoutY="87.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="116.0" />
+                              <Text layoutY="120.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="116.0" />
+                              <Line endY="156.0" layoutX="116.0" />
+                           </children>
+                        </Pane>
+                        <Pane layoutX="242.0" layoutY="10.0" prefHeight="156.0" prefWidth="116.0">
+                           <children>
+                              <Text layoutY="58.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="116.0" />
+                              <Text layoutY="87.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="116.0" />
+                              <Text layoutY="120.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="116.0" />
+                              <Line endY="156.0" layoutX="116.0" />
+                           </children>
+                        </Pane>
+                        <Pane layoutX="358.0" layoutY="10.0" prefHeight="156.0" prefWidth="116.0">
+                           <children>
+                              <Text layoutY="58.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="116.0" />
+                              <Text layoutY="87.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="116.0" />
+                              <Text layoutY="120.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="116.0" />
+                              <Line endY="156.0" layoutX="116.0" />
+                           </children>
+                        </Pane>
+                        <Pane layoutX="474.0" layoutY="10.0" prefHeight="156.0" prefWidth="116.0">
+                           <children>
+                              <Text layoutY="58.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="116.0" />
+                              <Text layoutY="87.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="116.0" />
+                              <Text layoutY="120.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="116.0" />
+                              <Line endY="156.0" layoutX="116.0" />
+                           </children>
+                        </Pane>
+                     </children></HBox>
+                  <AnchorPane prefHeight="518.0" prefWidth="979.0">
+                     <children>
+                        <Text fx:id="player" layoutY="492.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Name" textAlignment="CENTER" wrappingWidth="692.0">
+                           <font>
+                              <Font size="40.0" />
+                           </font>
+                        </Text>
+                        <Button fx:id="ready" layoutX="836.0" layoutY="451.0" mnemonicParsing="false" onAction="#setUserReady" prefHeight="56.0" prefWidth="137.0" text="Připraven" />
+                        <Text fx:id="playerr" fill="RED" layoutX="692.0" layoutY="486.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Nepřipraven" textAlignment="CENTER" wrappingWidth="130.0">
+                           <font>
+                              <Font size="20.0" />
+                           </font>
+                        </Text>
+                        <TextArea fx:id="console" editable="false" layoutX="703.0" layoutY="-164.0" prefHeight="606.0" prefWidth="270.0" wrapText="true" />
+                        <HBox fx:id="hboxCards" layoutX="6.0" layoutY="279.0" prefHeight="163.0" prefWidth="681.0" spacing="50">
+                           <children>
+                              <ImageView fitHeight="156.0" fitWidth="130.0" pickOnBounds="true" preserveRatio="true" />
+                              <ImageView fitHeight="156.0" fitWidth="130.0" layoutX="10.0" layoutY="10.0" pickOnBounds="true" preserveRatio="true" />
+                              <ImageView fitHeight="156.0" fitWidth="130.0" layoutX="107.0" layoutY="10.0" pickOnBounds="true" preserveRatio="true" />
+                              <ImageView fitHeight="156.0" fitWidth="130.0" layoutX="204.0" layoutY="10.0" pickOnBounds="true" preserveRatio="true" />
+                           </children>
+                        </HBox>
+                     </children>
+                  </AnchorPane>
+               </children>
+            </VBox>
             </children>
         </Pane>
     </children>
@@ -94,7 +123,4 @@
     <rowConstraints>
         <RowConstraints />
     </rowConstraints>
-    <stylesheets>
-        <URL value="@/Trick/Public/Styles/material.css" />
-    </stylesheets>
 </GridPane>
