@@ -99,12 +99,12 @@
                         </HBox>
                         <Pane fx:id="mainGamePane" disable="true" layoutX="96.0" layoutY="39.0" prefHeight="200.0" prefWidth="500.0" visible="false">
                            <children>
-                              <Text fx:id="CardStack" layoutX="175.0" layoutY="119.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Počet karet" textAlignment="CENTER" wrappingWidth="150.0">
+                              <Text fx:id="cardStack" layoutX="175.0" layoutY="119.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Počet karet" textAlignment="CENTER" wrappingWidth="150.0">
                                  <font>
                                     <Font size="50.0" />
                                  </font>
                               </Text>
-                              <Rectangle arcHeight="5.0" arcWidth="5.0" blendMode="DARKEN" height="200.0" layoutX="175.0" stroke="BLACK" strokeType="INSIDE" width="150.0" onMousePressed="#checkCheat">
+                              <Rectangle arcHeight="5.0" arcWidth="5.0" blendMode="DARKEN" height="200.0" layoutX="175.0" onMousePressed="#checkCheat" stroke="BLACK" strokeType="INSIDE" width="150.0">
                                  <fill>
                                     <RadialGradient centerX="0.48314606741573035" centerY="0.5" radius="0.5">
                                        <stops>
@@ -123,6 +123,11 @@
                               <Text layoutX="368.0" layoutY="37.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Barva karty na vrchu balíčku:" textAlignment="CENTER" wrappingWidth="100.0" />
                               <Text layoutX="368.0" layoutY="181.0" strokeType="OUTSIDE" strokeWidth="0.0" text="(až po otočení)" textAlignment="CENTER" wrappingWidth="100.0" />
                            </children></Pane>
+                        <Text fx:id="winner" layoutX="2.0" layoutY="150.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" visible="false" wrappingWidth="690.0">
+                           <font>
+                              <Font name="Ubuntu Bold" size="36.0" />
+                           </font>
+                        </Text>
                      </children>
                   </AnchorPane>
                </children>

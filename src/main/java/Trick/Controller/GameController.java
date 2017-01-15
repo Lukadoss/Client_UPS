@@ -2,13 +2,14 @@ package Trick.Controller;
 
 import Trick.Main;
 import Trick.TCPClient.TCP;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
-import javafx.scene.input.DragEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -21,23 +22,22 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
+import javafx.util.Duration;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 
-/**
- * Created by seda on 28/10/16.
- */
 public class GameController implements Initializable {
     private TCP tcpConn;
     private boolean onTurn = true;
     private int r, g, b, k;
     private int hboxPos = 0;
+    private String dcCards;
 
     @FXML
     public Pane mainGamePane;
     @FXML
-    public Text statusText, CardStack, player, playerr, turnCard;
+    public Text statusText, cardStack, player, playerr, turnCard, winner;
     @FXML
     public Rectangle firstCard, cheatCard;
     @FXML
@@ -238,6 +238,8 @@ public class GameController implements Initializable {
                 playerr.setFill(Color.GREEN);
                 playerr.setVisible(false);
                 ready.setVisible(false);
+                cardStack.setText(""+0);
+                firstCard.setFill(Color.WHITE);
 
                 if(onTurn) {
                     for (Node pn : hboxUI.getChildren()) {
@@ -261,7 +263,8 @@ public class GameController implements Initializable {
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
-                console.setText(console.getText() + s + "\n");
+                if (console.getText().length()>1000) console.setText("");
+                console.setText(s+"\n"+console.getText());
             }
         });
     }
@@ -291,6 +294,7 @@ public class GameController implements Initializable {
                     }
                 } else {
                     playerr.setVisible(false);
+                    hboxCards.setDisable(true);
                 }
             }
         });
@@ -298,80 +302,181 @@ public class GameController implements Initializable {
 
     public void sendBlack(MouseEvent mouseEvent) {
         if (onTurn) {
-            if (b != 0) {
-                tcpConn.putCard("B");
-            }
+            tcpConn.putCard("B");
         }
     }
 
     public void sendGreen(MouseEvent mouseEvent) {
         if (onTurn) {
-            if (b != 0) {
-                tcpConn.putCard("G");
-            }
+            tcpConn.putCard("G");
         }
     }
 
     public void sendRed(MouseEvent mouseEvent) {
         if (onTurn) {
-            if (b != 0) {
-                tcpConn.putCard("R");
-            }
+            tcpConn.putCard("R");
         }
     }
 
     public void sendBlue(MouseEvent mouseEvent) {
         if (onTurn) {
-            if (b != 0) {
-                tcpConn.putCard("K");
-            }
+            tcpConn.putCard("K");
         }
     }
 
     public void lostCard(String s) {
-        switch (s) {
-            case "K":
-                k--;
-                ((Text) ((Pane) hboxCards.getChildren().get(0)).getChildren().get(0)).setText("" + k);
-                break;
-            case "B":
-                b--;
-                ((Text) ((Pane) hboxCards.getChildren().get(1)).getChildren().get(0)).setText("" + b);
-                break;
-            case "G":
-                g--;
-                ((Text) ((Pane) hboxCards.getChildren().get(2)).getChildren().get(0)).setText("" + g);
-                break;
-            case "R":
-                r--;
-                ((Text) ((Pane) hboxCards.getChildren().get(3)).getChildren().get(0)).setText("" + r);
-                break;
-        }
-        hboxCards.setDisable(true);
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                switch (s) {
+                    case "K":
+                        k--;
+                        ((Text) ((Pane) hboxCards.getChildren().get(0)).getChildren().get(0)).setText("" + k);
+                        break;
+                    case "B":
+                        b--;
+                        ((Text) ((Pane) hboxCards.getChildren().get(1)).getChildren().get(0)).setText("" + b);
+                        break;
+                    case "G":
+                        g--;
+                        ((Text) ((Pane) hboxCards.getChildren().get(2)).getChildren().get(0)).setText("" + g);
+                        break;
+                    case "R":
+                        r--;
+                        ((Text) ((Pane) hboxCards.getChildren().get(3)).getChildren().get(0)).setText("" + r);
+                        break;
+                }
+                hboxCards.setDisable(true);
+            }
+        });
     }
 
     public void readyPlayground(int cardNum, String guessedCard) {
-        CardStack.setText(""+cardNum);
-        switch (guessedCard) {
-            case "K":
-                firstCard.setFill(Color.BLUE);
-                break;
-            case "B":
-                firstCard.setFill(Color.BLACK);
-                break;
-            case "G":
-                firstCard.setFill(Color.LIME);
-                break;
-            case "R":
-                firstCard.setFill(Color.RED);
-                break;
-            case "X":
-                firstCard.setFill(Color.WHITE);
-                break;
-        }
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                cardStack.setText(""+cardNum);
+                switch (guessedCard) {
+                    case "K":
+                        firstCard.setFill(Color.BLUE);
+                        break;
+                    case "B":
+                        firstCard.setFill(Color.BLACK);
+                        break;
+                    case "G":
+                        firstCard.setFill(Color.LIME);
+                        break;
+                    case "R":
+                        firstCard.setFill(Color.RED);
+                        break;
+                    case "X":
+                        firstCard.setFill(Color.WHITE);
+                        break;
+                }
+            }
+        });
     }
 
     public void checkCheat(){
-//        onTurn = false;
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                if(!cardStack.getText().equals("0")) {
+                    tcpConn.checkCheat();
+                }
+            }
+        });
+    }
+
+    public void setCheater(String name, int cardNum) {
+        for (Node pn : hboxUI.getChildren()) {
+            if (pn instanceof Pane) {
+                Node rdy = ((Pane) pn).getChildren().get(0);
+                if (((Text) rdy).getText().equals(name)) ((Text) ((Pane) pn).getChildren().get(1)).setText("Počet karet: " +cardNum);
+            }
+        }
+        firstCard.setFill(Color.WHITE);
+        cardStack.setText(""+0);
+    }
+
+    public void setDisconnected(String name) {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                for (Node pn : hboxUI.getChildren()) {
+                    if (pn instanceof Pane) {
+                        Node rdy = ((Pane) pn).getChildren().get(0);
+                        if (((Text) rdy).getText().equals(name)) {
+                            ((Text) ((Pane) pn).getChildren().get(2)).setFill(Color.RED);
+                            ((Text) ((Pane) pn).getChildren().get(2)).setText("DISCONNECT!");
+                            ((Text) ((Pane) pn).getChildren().get(2)).setVisible(true);
+                            break;
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    public void setReconnected(String name) {
+        for (Node pn : hboxUI.getChildren()) {
+            if (pn instanceof Pane) {
+                Node rdy = ((Pane) pn).getChildren().get(0);
+                if (((Text) rdy).getText().equals(name)) {
+                    ((Text) ((Pane) pn).getChildren().get(2)).setFill(Color.GREEN);
+                    ((Text) ((Pane) pn).getChildren().get(2)).setText("HRAJE!");
+                    ((Text) ((Pane) pn).getChildren().get(2)).setVisible(false);
+                    break;
+                }
+            }
+        }
+    }
+
+    public void gameEnd(String name) {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                Timeline timeline = new Timeline(new KeyFrame(
+                        Duration.millis(5000),
+                        ae -> clearRoom()));
+                if (!name.equals("")){
+                    mainGamePane.setVisible(false);
+                    winner.setText("Víťezem hry se stává: "+name);
+                    winner.setFont(Font.font("Verdana", FontWeight.BOLD, 40));
+                    while (winner.getLayoutBounds().getWidth() > 690) {
+                        winner.setFont(Font.font("Verdana", FontWeight.BOLD, winner.getFont().getSize() - 1));
+                        winner.setText(name);
+                    }
+                    winner.setVisible(true);
+                    timeline.play();
+                }else{
+                    mainGamePane.setVisible(false);
+                    winner.setText("Hráč se nestihl vrátit v časovém limitu. Hra končí.");
+                    winner.setFont(Font.font("Verdana", FontWeight.BOLD, 30));
+                    winner.setVisible(true);
+                    timeline.play();
+                }
+            }
+        });
+    }
+
+    private void clearRoom(){
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                hboxCards.setVisible(false);
+                ready.setDisable(false);
+                ready.setVisible(true);
+                playerr.setText("Nepřipraven");
+                playerr.setFill(Color.RED);
+                playerr.setVisible(true);
+                winner.setVisible(false);
+                while(hboxUI.getChildren().iterator().hasNext()){
+                    hboxUI.getChildren().remove(0);
+                    hboxPos--;
+                }
+                tcpConn.getRoomInfo();
+            }
+        });
     }
 }

@@ -15,6 +15,8 @@ public class MsgTables {
                 return "C_ROOM_INFO";
             case C_PUT_CARD:
                 return "C_PUT_CARD";
+            case C_CHECK_CHEAT:
+                return "C_CHECK_CHEAT";
             default:
                 return "";
         }
