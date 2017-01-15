@@ -3,6 +3,8 @@ package Trick.Controller;
 import Trick.Main;
 import Trick.TCPClient.TCP;
 import Trick.TCPClient.ClientListener;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -16,6 +18,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -42,6 +45,10 @@ public class LoginController {
 
     public void attemptLogin() {
         statusText.setText("");
+        loginBtn.setDisable(true);
+        Timeline timeline = new Timeline(new KeyFrame(
+                Duration.millis(1000),
+                ae -> loginBtn.setDisable(false)));
         try {
             InetAddress inetAddress = InetAddress.getByName(ipField.getText());
             int port = Integer.parseInt(portField.getText());
@@ -51,12 +58,12 @@ public class LoginController {
                 clientListener = new ClientListener(tcp);
                 Thread thread = new Thread(clientListener);
                 thread.start();
-                sleep(100);
                 tcp.loginUser(nickField.getText());
             }
         } catch (Exception e) {
-            setStatusText("Neplatný server/port", 3000);
+            setStatusText("Neplatný server/port", 1000);
         }
+        timeline.play();
     }
 
     public void setLobbyUi() {

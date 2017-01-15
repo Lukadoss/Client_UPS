@@ -54,15 +54,15 @@
                            </font>
                         </Text>
                         <TextArea fx:id="console" editable="false" layoutX="703.0" layoutY="-164.0" prefHeight="606.0" prefWidth="270.0" wrapText="true" />
-                        <HBox fx:id="hboxCards" alignment="CENTER" layoutX="6.0" layoutY="279.0" prefHeight="163.0" prefWidth="681.0" spacing="50" visible="false">
+                        <HBox fx:id="hboxCards" alignment="CENTER" disable="true" layoutX="6.0" layoutY="279.0" prefHeight="163.0" prefWidth="681.0" spacing="50" visible="false">
                            <children>
                               <Pane maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="170.0" prefWidth="116.0">
                                  <HBox.margin>
                                     <Insets />
                                  </HBox.margin>
                                  <children>
-                                    <Text layoutY="146.0" strokeType="OUTSIDE" strokeWidth="0.0" text="R" textAlignment="CENTER" wrappingWidth="116.0" />
-                                    <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#ff1f1f" height="100.0" layoutX="8.0" layoutY="8.0" onMousePressed="#sendRed" stroke="BLACK" strokeType="INSIDE" width="100.0">
+                                    <Text layoutY="146.0" strokeType="OUTSIDE" strokeWidth="0.0" text="0" textAlignment="CENTER" wrappingWidth="116.0" />
+                                    <Rectangle arcHeight="5.0" arcWidth="5.0" fill="BLUE" height="100.0" layoutX="8.0" layoutY="8.0" onMousePressed="#sendBlue" stroke="BLACK" strokeType="INSIDE" width="100.0">
                                        <cursor>
                                           <Cursor fx:constant="HAND" />
                                        </cursor></Rectangle>
@@ -70,8 +70,8 @@
                               </Pane>
                               <Pane layoutX="293.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="170.0" prefWidth="116.0">
                                  <children>
-                                    <Text layoutY="146.0" strokeType="OUTSIDE" strokeWidth="0.0" text="G" textAlignment="CENTER" wrappingWidth="116.0" />
-                                    <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#21ff2c" height="100.0" layoutX="8.0" layoutY="8.0" onMousePressed="#sendGreen" stroke="BLACK" strokeType="INSIDE" width="100.0">
+                                    <Text layoutY="146.0" strokeType="OUTSIDE" strokeWidth="0.0" text="0" textAlignment="CENTER" wrappingWidth="116.0" />
+                                    <Rectangle arcHeight="5.0" arcWidth="5.0" fill="BLACK" height="100.0" layoutX="8.0" layoutY="8.0" onMousePressed="#sendBlack" stroke="BLACK" strokeType="INSIDE" width="100.0">
                                        <cursor>
                                           <Cursor fx:constant="HAND" />
                                        </cursor></Rectangle>
@@ -79,8 +79,8 @@
                               </Pane>
                               <Pane layoutX="376.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="170.0" prefWidth="116.0">
                                  <children>
-                                    <Text layoutY="146.0" strokeType="OUTSIDE" strokeWidth="0.0" text="B" textAlignment="CENTER" wrappingWidth="116.0" />
-                                    <Rectangle arcHeight="5.0" arcWidth="5.0" height="100.0" layoutX="8.0" layoutY="8.0" onMousePressed="#sendBlack" stroke="BLACK" strokeType="INSIDE" width="100.0">
+                                    <Text layoutY="146.0" strokeType="OUTSIDE" strokeWidth="0.0" text="0" textAlignment="CENTER" wrappingWidth="116.0" />
+                                    <Rectangle arcHeight="5.0" arcWidth="5.0" fill="LIME" height="100.0" layoutX="8.0" layoutY="8.0" onMousePressed="#sendGreen" stroke="BLACK" strokeType="INSIDE" width="100.0">
                                        <cursor>
                                           <Cursor fx:constant="HAND" />
                                        </cursor></Rectangle>
@@ -88,8 +88,8 @@
                               </Pane>
                               <Pane layoutX="459.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="170.0" prefWidth="116.0">
                                  <children>
-                                    <Text layoutY="146.0" strokeType="OUTSIDE" strokeWidth="0.0" text="K" textAlignment="CENTER" wrappingWidth="116.0" />
-                                    <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#9e6401" height="100.0" layoutX="8.0" layoutY="8.0" onMousePressed="#sendBrown" stroke="BLACK" strokeType="INSIDE" width="100.0">
+                                    <Text layoutY="146.0" strokeType="OUTSIDE" strokeWidth="0.0" text="0" textAlignment="CENTER" wrappingWidth="116.0" />
+                                    <Rectangle arcHeight="5.0" arcWidth="5.0" fill="RED" height="100.0" layoutX="8.0" layoutY="8.0" onMousePressed="#sendRed" stroke="BLACK" strokeType="INSIDE" width="100.0">
                                        <cursor>
                                           <Cursor fx:constant="HAND" />
                                        </cursor></Rectangle>
@@ -97,14 +97,14 @@
                               </Pane>
                            </children>
                         </HBox>
-                        <Pane fx:id="mainGamePane" layoutX="96.0" layoutY="39.0" prefHeight="200.0" prefWidth="500.0" visible="false">
+                        <Pane fx:id="mainGamePane" disable="true" layoutX="96.0" layoutY="39.0" prefHeight="200.0" prefWidth="500.0" visible="false">
                            <children>
-                              <Text layoutX="175.0" layoutY="119.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Počet karet" textAlignment="CENTER" wrappingWidth="150.0">
+                              <Text fx:id="CardStack" layoutX="175.0" layoutY="119.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Počet karet" textAlignment="CENTER" wrappingWidth="150.0">
                                  <font>
                                     <Font size="50.0" />
                                  </font>
                               </Text>
-                              <Rectangle arcHeight="5.0" arcWidth="5.0" blendMode="DARKEN" height="200.0" layoutX="175.0" stroke="BLACK" strokeType="INSIDE" width="150.0">
+                              <Rectangle arcHeight="5.0" arcWidth="5.0" blendMode="DARKEN" height="200.0" layoutX="175.0" stroke="BLACK" strokeType="INSIDE" width="150.0" onMousePressed="#checkCheat">
                                  <fill>
                                     <RadialGradient centerX="0.48314606741573035" centerY="0.5" radius="0.5">
                                        <stops>
@@ -113,12 +113,15 @@
                                        </stops>
                                     </RadialGradient>
                                  </fill>
+                                 <cursor>
+                                    <Cursor fx:constant="HAND" />
+                                 </cursor>
                               </Rectangle>
-                              <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="100.0" layoutX="368.0" layoutY="68.0" stroke="BLACK" strokeType="INSIDE" width="100.0" />
-                              <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="100.0" layoutX="37.0" layoutY="68.0" stroke="BLACK" strokeType="INSIDE" width="100.0" />
-                              <Text layoutX="37.0" layoutY="37.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Barva karty na vrchu balíčku:" textAlignment="CENTER" wrappingWidth="100.0" />
-                              <Text layoutX="368.0" layoutY="37.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Barva karty ve spodu balíčku:" textAlignment="CENTER" wrappingWidth="100.0" />
-                              <Text layoutX="37.0" layoutY="181.0" strokeType="OUTSIDE" strokeWidth="0.0" text="(až po otočení)" textAlignment="CENTER" wrappingWidth="100.0" />
+                              <Rectangle fx:id="cheatCard" arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="100.0" layoutX="368.0" layoutY="68.0" stroke="BLACK" strokeType="INSIDE" width="100.0" />
+                              <Rectangle fx:id="firstCard" arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="100.0" layoutX="37.0" layoutY="68.0" stroke="BLACK" strokeType="INSIDE" width="100.0" />
+                              <Text layoutX="37.0" layoutY="37.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Barva karty ve spodu balíčku:" textAlignment="CENTER" wrappingWidth="100.0" />
+                              <Text layoutX="368.0" layoutY="37.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Barva karty na vrchu balíčku:" textAlignment="CENTER" wrappingWidth="100.0" />
+                              <Text layoutX="368.0" layoutY="181.0" strokeType="OUTSIDE" strokeWidth="0.0" text="(až po otočení)" textAlignment="CENTER" wrappingWidth="100.0" />
                            </children></Pane>
                      </children>
                   </AnchorPane>
