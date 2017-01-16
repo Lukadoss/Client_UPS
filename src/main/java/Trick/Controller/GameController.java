@@ -32,7 +32,6 @@ public class GameController implements Initializable {
     private boolean onTurn = true;
     private int r, g, b, k;
     private int hboxPos = 0;
-    private String dcCards;
 
     @FXML
     public Pane mainGamePane;
@@ -388,6 +387,43 @@ public class GameController implements Initializable {
         });
     }
 
+    public void setCheatedCard(String cheatedCard) {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                switch (cheatedCard) {
+                    case "K":
+                        cheatCard.setFill(Color.BLUE);
+                        break;
+                    case "B":
+                        cheatCard.setFill(Color.BLACK);
+                        break;
+                    case "G":
+                        cheatCard.setFill(Color.LIME);
+                        break;
+                    case "R":
+                        cheatCard.setFill(Color.RED);
+                        break;
+                }
+                hboxCards.setDisable(true);
+                mainGamePane.setDisable(true);
+                for (Node pn : hboxUI.getChildren()) {
+                    if (pn instanceof Pane) {
+                        Node rdy = ((Pane) pn).getChildren().get(2);
+                        if (rdy instanceof Text && rdy.isVisible()) {
+                            rdy.setVisible(false);
+                            break;
+                        }
+                    }
+                }
+                Timeline timeline = new Timeline(new KeyFrame(
+                        Duration.millis(2000),
+                        ae -> continueGame()));
+                timeline.play();
+            }
+        });
+    }
+
     public void setCheater(String name, int cardNum) {
         for (Node pn : hboxUI.getChildren()) {
             if (pn instanceof Pane) {
@@ -476,6 +512,18 @@ public class GameController implements Initializable {
                     hboxPos--;
                 }
                 tcpConn.getRoomInfo();
+                onTurn = true;
+            }
+        });
+    }
+
+    private void continueGame(){
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                hboxCards.setDisable(false);
+                mainGamePane.setDisable(false);
+                cheatCard.setFill(Color.WHITE);
             }
         });
     }

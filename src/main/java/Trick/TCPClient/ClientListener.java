@@ -120,6 +120,10 @@ public class ClientListener implements Runnable {
                 gameController.writeToConsole(message);
                 gameController.setCheater(splittedMsg[1], Integer.parseInt(splittedMsg[2]));
                 break;
+            case "S_CHEATED_CARD":
+                gameController.writeToConsole(message);
+                gameController.setCheatedCard(splittedMsg[1]);
+                break;
             case "S_GAME_WINNER":
                 gameController.writeToConsole(message);
                 gameController.gameEnd(splittedMsg[1]);
@@ -137,7 +141,7 @@ public class ClientListener implements Runnable {
                 gameController.setReconnected(splittedMsg[1]);
                 break;
             default:
-                gameController.console.setText(gameController.console.getText()+splittedMsg[0]+"\n");
+                gameController.console.setText(splittedMsg[0]+"\n"+gameController.console.getText());
                 break;
         }
     }
