@@ -15,17 +15,26 @@ public class TCP {
     private Socket socket;
 
     public TCP(InetAddress serverIP, int serverPort) {
-        try {
-            socket = new Socket(serverIP, serverPort);
-        } catch (IOException e) {
-            LoginController controller = Main.FXMLLOADER_LOGIN.getController();
-            controller.setStatusText("Připojení k serveru " + serverIP + ":" + serverPort + " se nezdařilo", 3000);
-        } catch (IllegalArgumentException e) {
-            LoginController controller = Main.FXMLLOADER_LOGIN.getController();
-            controller.setStatusText("Nesprávné číslo portu: číslo v rozmezí 0 - 65535", 3000);
-        } catch (NullPointerException e) {
-            LoginController controller = Main.FXMLLOADER_LOGIN.getController();
-            controller.setStatusText("Hostitelský server nerozpoznán", 3000);
+        Thread thread = new Thread(() -> {
+            try {
+                socket = new Socket(serverIP, serverPort);
+            } catch (IOException e) {
+                LoginController controller = Main.FXMLLOADER_LOGIN.getController();
+                controller.setStatusText("Připojení k serveru " + serverIP + ":" + serverPort + " se nezdařilo", 3000);
+            } catch (IllegalArgumentException e) {
+                LoginController controller = Main.FXMLLOADER_LOGIN.getController();
+                controller.setStatusText("Nesprávné číslo portu: číslo v rozmezí 0 - 65535", 3000);
+            } catch (NullPointerException e) {
+                LoginController controller = Main.FXMLLOADER_LOGIN.getController();
+                controller.setStatusText("Hostitelský server nerozpoznán", 3000);
+            }
+        });
+        thread.start();
+        try{
+            thread.join(1000);
+        } catch (InterruptedException e) {
+            System.out.println("Padlo to širďo");
+            e.printStackTrace();
         }
     }
 
