@@ -33,7 +33,7 @@ public class TCP {
         try{
             thread.join(1000);
         } catch (InterruptedException e) {
-            System.out.println("Padlo to širďo");
+            System.out.println("Dropnul IPTables širďo");
             e.printStackTrace();
         }
     }
@@ -41,34 +41,34 @@ public class TCP {
     public void loginUser(String name) {
         String connString = MsgTables.getType(MsgTypes.C_LOGIN) + ":" + name + "#";
         sendMsg(connString);
-        System.out.println(connString);
+//        System.out.println(connString);
     }
 
     public void getRoomInfo(){
         String roomInfo = MsgTables.getType(MsgTypes.C_ROOM_INFO) + "#";
         sendMsg(roomInfo);
-        System.out.println(roomInfo);
+//        System.out.println(roomInfo);
 
     }
 
     public void userReady() {
         String usrrdy = MsgTables.getType(MsgTypes.C_USR_READY) + "#";
         sendMsg(usrrdy);
-        System.out.println(usrrdy);
+//        System.out.println(usrrdy);
 
     }
 
     public void putCard(String card) {
         String cardplace = MsgTables.getType(MsgTypes.C_PUT_CARD) + ":"+card+"#";
         sendMsg(cardplace);
-        System.out.println(cardplace);
+//        System.out.println(cardplace);
 
     }
 
     public void checkCheat() {
         String cheater = MsgTables.getType(MsgTypes.C_CHECK_CHEAT) +"#";
         sendMsg(cheater);
-        System.out.println(cheater);
+//        System.out.println(cheater);
     }
 
     private void sendMsg(String data) {
