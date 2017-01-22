@@ -6,6 +6,7 @@ import Trick.Main;
 import javafx.application.Platform;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 public class ClientListener implements Runnable {
     private TCP tcpInfo;
@@ -21,15 +22,6 @@ public class ClientListener implements Runnable {
 
     @Override
     public void run() {
-        if (!ClientListenerRunning) {
-            if (tcpInfo == null) {
-                try {
-                    tcpInfo.getSocket().close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
         while (ClientListenerRunning) {
             try {
                 String message = tcpInfo.receiveMsg();
@@ -49,7 +41,15 @@ public class ClientListener implements Runnable {
                     e.printStackTrace();
                 }
                 ex.printStackTrace();
-                //TODO
+            }
+            if (!ClientListenerRunning) {
+                if (tcpInfo != null) {
+                    try {
+                        tcpInfo.getSocket().close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
         }
     }
@@ -70,12 +70,18 @@ public class ClientListener implements Runnable {
                 break;
             case "S_NAME_EXISTS":
                 loginController.setStatusText("Uživatel se jménem " + splittedMsg[1] + " již existuje", 1000);
+                loginController.resetTCP();
+                ClientListenerRunning = false;
                 break;
             case "S_SERVER_FULL":
                 loginController.setStatusText("Server je plný", 1000);
+                loginController.resetTCP();
+                ClientListenerRunning = false;
                 break;
             case "S_JOIN_ERR":
-                gameController.setStatusText("Připojení k místnosti " + splittedMsg[1] + " se nezdařilo", true);
+                loginController.setStatusText("Připojení k místnosti se nezdařilo", 1000);
+                loginController.resetTCP();
+                ClientListenerRunning = false;
                 break;
             case "S_ROOM_INFO":
                 gameController.writeToConsole(message);
@@ -141,7 +147,12 @@ public class ClientListener implements Runnable {
                 gameController.setReconnected(splittedMsg[1]);
                 break;
             default:
-                gameController.console.setText(splittedMsg[0]+"\n"+gameController.console.getText());
+                if (gameController==null){
+                    loginController.resetTCP();
+                    ClientListenerRunning = false;
+                }
+                System.out.println("Chybna zprava: "+message);
+//                gameController.console.setText(splittedMsg[0]+"\n"+gameController.console.getText());
                 break;
         }
     }

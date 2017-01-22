@@ -78,7 +78,9 @@ public class TCP {
                 try {
                     if (socket != null) {
                         DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
-                        dataOutputStream.write(data.getBytes());
+                        String cutData = data;
+                        if (data.length()>128) cutData = data.substring(0,127);
+                        dataOutputStream.write(cutData.getBytes());
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -95,9 +97,7 @@ public class TCP {
                 String msg = "";
                 if ((buffer = br.readLine()) != null) {
                     msg += buffer;
-                    if (msg.contains("#")) {
-                        return msg;
-                    }
+                    return msg;
                 } else {
                     br.close();
                     return null;
@@ -110,7 +110,6 @@ public class TCP {
             //e.printStackTrace();
             return null;
         }
-        return null;
     }
 
     public Socket getSocket(){

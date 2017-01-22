@@ -118,6 +118,7 @@ public class LoginController {
 
                     LoginController l = Main.FXMLLOADER_LOGIN.getController();
                     l.setStatusText("Spojení se serverem bylo přerušeno", 8000);
+                    clientListener.setGameController(null);
 
                 } catch (Exception e) {
                     e.printStackTrace();
