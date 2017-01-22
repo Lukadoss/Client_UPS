@@ -10,9 +10,13 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.net.SocketException;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class TCP {
     private Socket socket;
+    private Thread pingThread;
 
     public TCP(InetAddress serverIP, int serverPort) {
         Thread thread = new Thread(() -> {
@@ -32,10 +36,16 @@ public class TCP {
         thread.start();
         try{
             thread.join(1000);
-        } catch (InterruptedException e) {
-            System.out.println("Dropnul IPTables širďo");
+        } catch (InterruptedException ignored) {
+
+        }
+
+        try {
+            socket.setSoTimeout(5000);
+        } catch (SocketException e) {
             e.printStackTrace();
         }
+
     }
 
     public void loginUser(String name) {
@@ -71,6 +81,35 @@ public class TCP {
 //        System.out.println(cheater);
     }
 
+    public void startPinging(){
+        pingThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Timer timer = new Timer();
+                timer.scheduleAtFixedRate(new TimerTask() {
+                    @Override
+                    public void run() {
+                        if(!socket.isClosed()) sendMsg("ping");
+                        else {
+                            timer.purge();
+                            timer.cancel();
+                            closeThread();
+                        }
+                    }
+                }, 0, 2000);
+            }
+        });
+        pingThread.start();
+    }
+
+    private void closeThread() {
+        try {
+            pingThread.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void sendMsg(String data) {
         Platform.runLater(new Runnable() {
             @Override
@@ -79,9 +118,9 @@ public class TCP {
                     if (socket != null) {
                         DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
                         String cutData = data;
-                        if (data.length()>128) cutData = data.substring(0,127);
+                        if (data.length()>128) cutData = data.substring(0,126);
                         dataOutputStream.write(cutData.getBytes());
-                    }
+                        }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

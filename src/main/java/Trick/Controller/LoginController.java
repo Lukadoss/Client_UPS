@@ -22,6 +22,8 @@ import javafx.util.Duration;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import static java.lang.Thread.sleep;
 public class LoginController {
@@ -59,6 +61,8 @@ public class LoginController {
                 Thread thread = new Thread(clientListener);
                 thread.start();
                 tcp.loginUser(nickField.getText());
+            }else{
+                setStatusText("Nedostupný server", 1000);
             }
         } catch (Exception e) {
             setStatusText("Neplatný server/port", 1000);
@@ -89,6 +93,8 @@ public class LoginController {
                     GameController s = Main.FXMLLOADER_SERVERLOBBY.getController();
                     clientListener.setGameController(s);
                     s.setStatusText("Přihlášen na server", false);
+
+                    tcp.startPinging();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
