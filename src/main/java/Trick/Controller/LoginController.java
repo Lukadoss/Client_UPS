@@ -122,7 +122,7 @@ public class LoginController {
 
                     LoginController l = Main.FXMLLOADER_LOGIN.getController();
                     l.setStatusText("Spojení se serverem bylo přerušeno", 8000);
-                    clientListener.setGameController(null);
+                    if(clientListener!=null) clientListener.setGameController(null);
 
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -132,23 +132,18 @@ public class LoginController {
     }
 
     public void setStatusText(final String text, final int duration) {
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                statusText.setText(text);
-                statusTextVBox.setAlignment(Pos.CENTER);
-                statusText.setTextAlignment(TextAlignment.CENTER);
-                Thread timedText = new Thread() {
-                    public void run() {
-                        try {
-                            Thread.sleep(duration);
-                            statusText.setText("");
-                        } catch (InterruptedException ignored) {
-                        }
-                    }
-                };
-                timedText.start();
-            }
+        Platform.runLater(() -> {
+            statusText.setText(text);
+            statusTextVBox.setAlignment(Pos.CENTER);
+            statusText.setTextAlignment(TextAlignment.CENTER);
+            Thread timedText = new Thread(() -> {
+                try {
+                    Thread.sleep(duration);
+                    statusText.setText("");
+                } catch (InterruptedException ignored) {
+                }
+            });
+            timedText.start();
         });
     }
 
