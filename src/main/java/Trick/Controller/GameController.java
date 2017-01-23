@@ -53,8 +53,9 @@ public class GameController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         this.tcpConn = Main.tcpi;
-        tcpConn.getRoomInfo(); //TODO: volat jinde
+        tcpConn.getRoomInfo();
         player.setText(Main.userName);
+        tcpConn.startPinging();
     }
 
     public void setStatusText(final String text, final boolean err) {

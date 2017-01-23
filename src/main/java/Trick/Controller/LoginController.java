@@ -93,8 +93,6 @@ public class LoginController {
                     GameController s = Main.FXMLLOADER_SERVERLOBBY.getController();
                     clientListener.setGameController(s);
                     s.setStatusText("Přihlášen na server", false);
-
-                    tcp.startPinging();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

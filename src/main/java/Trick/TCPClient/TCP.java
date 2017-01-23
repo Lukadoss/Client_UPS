@@ -2,7 +2,10 @@ package Trick.TCPClient;
 
 import Trick.Controller.LoginController;
 import Trick.Main;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Platform;
+import javafx.util.Duration;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -16,7 +19,6 @@ import java.util.TimerTask;
 
 public class TCP {
     private Socket socket;
-    private Thread pingThread;
 
     public TCP(InetAddress serverIP, int serverPort) {
         Thread thread = new Thread(() -> {
@@ -45,69 +47,91 @@ public class TCP {
         } catch (SocketException e) {
             e.printStackTrace();
         }
-
     }
 
     public void loginUser(String name) {
-        String connString = MsgTables.getType(MsgTypes.C_LOGIN) + ":" + name + "#";
-        sendMsg(connString);
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                String connString = MsgTables.getType(MsgTypes.C_LOGIN) + ":" + name + "#";
+                sendMsg(connString);
 //        System.out.println(connString);
+            }
+        });
+
     }
 
     public void getRoomInfo(){
-        String roomInfo = MsgTables.getType(MsgTypes.C_ROOM_INFO) + "#";
-        sendMsg(roomInfo);
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                String roomInfo = MsgTables.getType(MsgTypes.C_ROOM_INFO) + "#";
+                sendMsg(roomInfo);
 //        System.out.println(roomInfo);
+            }
+        });
+
 
     }
 
     public void userReady() {
-        String usrrdy = MsgTables.getType(MsgTypes.C_USR_READY) + "#";
-        sendMsg(usrrdy);
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                String usrrdy = MsgTables.getType(MsgTypes.C_USR_READY) + "#";
+                sendMsg(usrrdy);
 //        System.out.println(usrrdy);
+            }
+        });
+
 
     }
 
     public void putCard(String card) {
-        String cardplace = MsgTables.getType(MsgTypes.C_PUT_CARD) + ":"+card+"#";
-        sendMsg(cardplace);
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                String cardplace = MsgTables.getType(MsgTypes.C_PUT_CARD) + ":"+card+"#";
+                sendMsg(cardplace);
 //        System.out.println(cardplace);
+            }
+        });
+
 
     }
 
     public void checkCheat() {
-        String cheater = MsgTables.getType(MsgTypes.C_CHECK_CHEAT) +"#";
-        sendMsg(cheater);
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                String cheater = MsgTables.getType(MsgTypes.C_CHECK_CHEAT) +"#";
+                sendMsg(cheater);
 //        System.out.println(cheater);
+            }
+        });
+
     }
 
     public void startPinging(){
-        pingThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                Timer timer = new Timer();
+        Timer timer = new Timer();
+
+        Timeline timeline = new Timeline(new KeyFrame(Duration.millis(3000), ae ->
                 timer.scheduleAtFixedRate(new TimerTask() {
                     @Override
                     public void run() {
-                        if(!socket.isClosed()) sendMsg("ping");
-                        else {
-                            timer.purge();
-                            timer.cancel();
-                            closeThread();
-                        }
+                        Platform.runLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                if(!socket.isClosed()) sendMsg("PING");
+                                else {
+                                    timer.purge();
+                                    timer.cancel();
+                                }
+                            }
+                        });
                     }
-                }, 0, 2000);
-            }
-        });
-        pingThread.start();
-    }
-
-    private void closeThread() {
-        try {
-            pingThread.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+                }, 0, 2000)));
+        timeline.play();
     }
 
     private void sendMsg(String data) {
