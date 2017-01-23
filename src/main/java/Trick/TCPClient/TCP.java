@@ -122,7 +122,7 @@ public class TCP {
                         Platform.runLater(new Runnable() {
                             @Override
                             public void run() {
-                                if(!socket.isClosed()) sendMsg("PING");
+                                if(!socket.isClosed()) sendMsg("PING#");
                                 else {
                                     timer.purge();
                                     timer.cancel();
