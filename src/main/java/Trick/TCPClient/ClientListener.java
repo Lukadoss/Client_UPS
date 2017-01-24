@@ -65,13 +65,17 @@ public class ClientListener implements Runnable {
                 ClientListenerRunning = false;
                 break;
             case "S_LOGGED":
-                loginController.setLobbyUi();
-                Main.userName = splittedMsg[1];
+                if(splittedMsg.length>1) {
+                    loginController.setLobbyUi();
+                    Main.userName = splittedMsg[1];
+                }
                 break;
             case "S_NAME_EXISTS":
-                loginController.setStatusText("Uživatel se jménem " + splittedMsg[1] + " již existuje", 1000);
-                loginController.resetTCP();
-                ClientListenerRunning = false;
+                if(splittedMsg.length>1) {
+                    loginController.setStatusText("Uživatel se jménem " + splittedMsg[1] + " již existuje", 1000);
+                    loginController.resetTCP();
+                    ClientListenerRunning = false;
+                }
                 break;
             case "S_SERVER_FULL":
                 loginController.setStatusText("Server je plný", 1000);
@@ -84,74 +88,100 @@ public class ClientListener implements Runnable {
                 ClientListenerRunning = false;
                 break;
             case "S_ROOM_INFO":
-                gameController.writeToConsole(message);
-                gameController.addNewUser(splittedMsg[1], Integer.parseInt(splittedMsg[2]), Integer.parseInt(splittedMsg[3]));
+                if(splittedMsg.length>3 && isParsable(splittedMsg[2]) && isParsable(splittedMsg[3])) {
+                    gameController.writeToConsole(message);
+                    gameController.addNewUser(splittedMsg[1], Integer.parseInt(splittedMsg[2]), Integer.parseInt(splittedMsg[3]));
+                }
                 break;
             case "S_USR_JOINED":
-                gameController.writeToConsole(message);
-                gameController.addNewUser(splittedMsg[1], 0, 0);
+                if(splittedMsg.length>1) {
+                    gameController.writeToConsole(message);
+                    gameController.addNewUser(splittedMsg[1], 0, 0);
+                }
                 break;
             case "S_USR_LEFT":
-                gameController.writeToConsole(message);
-                gameController.removeUser(splittedMsg[1]);
+                if(splittedMsg.length>1) {
+                    gameController.writeToConsole(message);
+                    gameController.removeUser(splittedMsg[1]);
+                }
                 break;
             case "S_USR_READY":
-                gameController.writeToConsole(message);
-                gameController.updateUserReady(splittedMsg[1]);
+                if(splittedMsg.length>1) {
+                    gameController.writeToConsole(message);
+                    gameController.updateUserReady(splittedMsg[1]);
+                }
                 break;
             case "S_USR_READY_ACK":
                 gameController.writeToConsole(message);
                 gameController.setReady();
                 break;
             case "S_CONSOLE_INFO":
-                if (gameController!= null) gameController.writeToConsole(splittedMsg[1]);
+                if(splittedMsg.length>1) {
+                    if (gameController != null) gameController.writeToConsole(splittedMsg[1]);
+                }
                 break;
             case "S_CARDS_OWNED":
                 gameController.writeToConsole(message);
                 gameController.readyTable(splittedMsg);
                 break;
             case "S_STACK_CARDS":
-                gameController.writeToConsole(message);
-                gameController.readyPlayground(Integer.parseInt(splittedMsg[1]), splittedMsg[2]);
+                if(splittedMsg.length>2 && isParsable(splittedMsg[1])) {
+                    gameController.writeToConsole(message);
+                    gameController.readyPlayground(Integer.parseInt(splittedMsg[1]), splittedMsg[2]);
+                }
                 break;
             case "S_ON_TURN":
-                gameController.writeToConsole(message);
-                gameController.setOnTurn(splittedMsg[1], splittedMsg[2], Integer.parseInt(splittedMsg[3]));
+                if(splittedMsg.length>3 && isParsable(splittedMsg[3])) {
+                    gameController.writeToConsole(message);
+                    gameController.setOnTurn(splittedMsg[1], splittedMsg[2], Integer.parseInt(splittedMsg[3]));
+                }
                 break;
             case "S_CARD_ACK":
-                gameController.writeToConsole(message);
-                gameController.lostCard(splittedMsg[1]);
+                if(splittedMsg.length>1) {
+                    gameController.writeToConsole(message);
+                    gameController.lostCard(splittedMsg[1]);
+                }
                 break;
             case "S_CARDS_NUM_CHANGE":
-                gameController.writeToConsole(message);
-                gameController.setCheater(splittedMsg[1], Integer.parseInt(splittedMsg[2]));
+                if(splittedMsg.length>2) {
+                    gameController.writeToConsole(message);
+                    gameController.setCheater(splittedMsg[1], Integer.parseInt(splittedMsg[2]));
+                }
                 break;
             case "S_CHEATED_CARD":
-                gameController.writeToConsole(message);
-                gameController.setCheatedCard(splittedMsg[1]);
+                if(splittedMsg.length>1) {
+                    gameController.writeToConsole(message);
+                    gameController.setCheatedCard(splittedMsg[1]);
+                }
                 break;
             case "S_GAME_WINNER":
-                gameController.writeToConsole(message);
-                gameController.gameEnd(splittedMsg[1]);
+                if(splittedMsg.length>1) {
+                    gameController.writeToConsole(message);
+                    gameController.gameEnd(splittedMsg[1]);
+                }
                 break;
             case "S_GAME_END":
                 gameController.writeToConsole(message);
                 gameController.gameEnd("");
                 break;
             case "S_DISCONNECT":
-                gameController.writeToConsole(message);
-                gameController.setDisconnected(splittedMsg[1]);
+                if(splittedMsg.length>1) {
+                    gameController.writeToConsole(message);
+                    gameController.setDisconnected(splittedMsg[1]);
+                }
                 break;
             case "S_RECONNECT":
-                gameController.writeToConsole(message);
-                gameController.setReconnected(splittedMsg[1]);
+                if(splittedMsg.length>1) {
+                    gameController.writeToConsole(message);
+                    gameController.setReconnected(splittedMsg[1]);
+                }
                 break;
             default:
                 if (gameController==null){
                     loginController.resetTCP();
                     ClientListenerRunning = false;
                 }
-                System.out.println("Chybna zprava: "+message);
+//                System.out.println("Chybna zprava: "+message);
 //                gameController.console.setText(splittedMsg[0]+"\n"+gameController.console.getText());
                 break;
         }
@@ -159,6 +189,15 @@ public class ClientListener implements Runnable {
 
     public void setGameController(GameController gameController) {
         this.gameController = gameController;
+    }
+
+    private boolean isParsable(String s) {
+        try{
+            Integer.parseInt(s);
+        }catch (NumberFormatException e){
+            return false;
+        }
+        return true;
     }
 }
 

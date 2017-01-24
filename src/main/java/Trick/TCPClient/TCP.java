@@ -114,7 +114,11 @@ public class TCP {
 
     public void startPinging(){
         Timer timer = new Timer();
-
+        try {
+            socket.setSoTimeout(5000);
+        } catch (SocketException e) {
+            e.printStackTrace();
+        }
         Timeline timeline = new Timeline(new KeyFrame(Duration.millis(3000), ae ->
                 timer.scheduleAtFixedRate(new TimerTask() {
                     @Override
