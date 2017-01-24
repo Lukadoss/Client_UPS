@@ -42,11 +42,11 @@ public class TCP {
 
         }
 
-        try {
-            socket.setSoTimeout(5000);
-        } catch (SocketException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            socket.setSoTimeout(5000);
+//        } catch (SocketException e) {
+//            e.printStackTrace();
+//        }
     }
 
     public void loginUser(String name) {
@@ -115,7 +115,7 @@ public class TCP {
     public void startPinging(){
         Timer timer = new Timer();
         try {
-            socket.setSoTimeout(5000);
+            socket.setSoTimeout(15000);
         } catch (SocketException e) {
             e.printStackTrace();
         }
@@ -146,7 +146,8 @@ public class TCP {
                     if (socket != null) {
                         DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
                         String cutData = data;
-                        if (data.length()>128) cutData = data.substring(0,126);
+                        if (data.length()>4096) cutData = data.substring(0,4096);
+                        System.out.println("Poslaná zpráva serveru: "+cutData);
                         dataOutputStream.write(cutData.getBytes());
                         }
                 } catch (IOException e) {
@@ -164,6 +165,7 @@ public class TCP {
                 String msg = "";
                 if ((buffer = br.readLine()) != null) {
                     msg += buffer;
+                    System.out.println("Přijata zpráva od serveru: "+buffer);
                     return msg;
                 } else {
                     br.close();
