@@ -151,7 +151,7 @@ public class ClientListener implements Runnable {
                     loginController.resetTCP();
                     ClientListenerRunning = false;
                 }
-//                System.out.println("Chybna zprava: "+message);
+                System.out.println("Chybna zprava: "+message);
 //                gameController.console.setText(splittedMsg[0]+"\n"+gameController.console.getText());
                 break;
         }
