@@ -46,6 +46,10 @@ public class LoginController {
     private ClientListener clientListener;
 
     public void attemptLogin() {
+        if(nickField.getText().length()<3 || nickField.getText().length()>15){
+            setStatusText("Zadejte jméno v rozmezí 3-15 znaků", 1000);
+            return;
+        }
         statusText.setText("");
         loginBtn.setDisable(true);
         Timeline timeline = new Timeline(new KeyFrame(

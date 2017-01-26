@@ -32,6 +32,7 @@ public class GameController implements Initializable {
     private boolean onTurn = true;
     private int r, g, b, k;
     private int hboxPos = 0;
+    private String playerOnTurn;
 
     @FXML
     public Pane mainGamePane;
@@ -283,7 +284,7 @@ public class GameController implements Initializable {
                             ((Text) ((Pane) pn).getChildren().get(1)).setText("Počet karet: " +lastPlayerCardsNum);
                     }
                 }
-
+                playerOnTurn = name;
                 onTurn = Main.userName.equals(name);
 
                 if (onTurn) {
@@ -408,6 +409,7 @@ public class GameController implements Initializable {
                 }
                 hboxCards.setDisable(true);
                 mainGamePane.setDisable(true);
+
                 for (Node pn : hboxUI.getChildren()) {
                     if (pn instanceof Pane) {
                         Node rdy = ((Pane) pn).getChildren().get(2);
@@ -462,7 +464,8 @@ public class GameController implements Initializable {
                 if (((Text) rdy).getText().equals(name)) {
                     ((Text) ((Pane) pn).getChildren().get(2)).setFill(Color.GREEN);
                     ((Text) ((Pane) pn).getChildren().get(2)).setText("HRAJE!");
-                    ((Text) ((Pane) pn).getChildren().get(2)).setVisible(false);
+                    if(playerOnTurn!=null && name.equals(playerOnTurn))((Text) ((Pane) pn).getChildren().get(2)).setVisible(true);
+                    else ((Text) ((Pane) pn).getChildren().get(2)).setVisible(false);
                     break;
                 }
             }

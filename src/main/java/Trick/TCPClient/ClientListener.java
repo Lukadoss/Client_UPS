@@ -65,7 +65,7 @@ public class ClientListener implements Runnable {
                 ClientListenerRunning = false;
                 break;
             case "S_LOGGED":
-                if(splittedMsg.length>1) {
+                if(splittedMsg.length>1 && splittedMsg[1].length()>2 && splittedMsg[1].length()<16) {
                     loginController.setLobbyUi();
                     Main.userName = splittedMsg[1];
                 }

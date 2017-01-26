@@ -41,12 +41,6 @@ public class TCP {
         } catch (InterruptedException ignored) {
 
         }
-
-//        try {
-//            socket.setSoTimeout(5000);
-//        } catch (SocketException e) {
-//            e.printStackTrace();
-//        }
     }
 
     public void loginUser(String name) {
@@ -55,7 +49,6 @@ public class TCP {
             public void run() {
                 String connString = MsgTables.getType(MsgTypes.C_LOGIN) + ":" + name + "#";
                 sendMsg(connString);
-//        System.out.println(connString);
             }
         });
 
@@ -67,7 +60,6 @@ public class TCP {
             public void run() {
                 String roomInfo = MsgTables.getType(MsgTypes.C_ROOM_INFO) + "#";
                 sendMsg(roomInfo);
-//        System.out.println(roomInfo);
             }
         });
 
@@ -80,7 +72,6 @@ public class TCP {
             public void run() {
                 String usrrdy = MsgTables.getType(MsgTypes.C_USR_READY) + "#";
                 sendMsg(usrrdy);
-//        System.out.println(usrrdy);
             }
         });
 
@@ -93,7 +84,6 @@ public class TCP {
             public void run() {
                 String cardplace = MsgTables.getType(MsgTypes.C_PUT_CARD) + ":"+card+"#";
                 sendMsg(cardplace);
-//        System.out.println(cardplace);
             }
         });
 
@@ -106,7 +96,6 @@ public class TCP {
             public void run() {
                 String cheater = MsgTables.getType(MsgTypes.C_CHECK_CHEAT) +"#";
                 sendMsg(cheater);
-//        System.out.println(cheater);
             }
         });
 
@@ -115,7 +104,7 @@ public class TCP {
     public void startPinging(){
         Timer timer = new Timer();
         try {
-            socket.setSoTimeout(15000);
+            socket.setSoTimeout(20000);
         } catch (SocketException e) {
             e.printStackTrace();
         }
@@ -147,7 +136,7 @@ public class TCP {
                         DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
                         String cutData = data;
                         if (data.length()>4096) cutData = data.substring(0,4096);
-                        System.out.println("Poslaná zpráva serveru: "+cutData);
+//                        System.out.println("Poslaná zpráva serveru: "+cutData);
                         dataOutputStream.write(cutData.getBytes());
                         }
                 } catch (IOException e) {
@@ -165,7 +154,7 @@ public class TCP {
                 String msg = "";
                 if ((buffer = br.readLine()) != null) {
                     msg += buffer;
-                    System.out.println("Přijata zpráva od serveru: "+buffer);
+//                    System.out.println("Přijata zpráva od serveru: "+buffer);
                     return msg;
                 } else {
                     br.close();
